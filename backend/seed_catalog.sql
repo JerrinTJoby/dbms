@@ -1,5 +1,4 @@
 -- Master Catalog Seed Data
-USE AgricultureDB;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- agriculture_offices
