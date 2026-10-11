@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#174a2e">
+    <title>Farmer Login | Farm Portal</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <section class="user-selector auth-selector" aria-labelledby="page-title" data-auth-page data-role="FARMER">
+        <h1 id="page-title">Farmer Account</h1>
+        <p class="description">Sign in or create your farmer account.</p>
+
+        <div class="auth-tabs" role="group" aria-label="Account option">
+          <button class="auth-tab" type="button" data-auth-mode="login" aria-pressed="true">Login</button>
+          <button class="auth-tab" type="button" data-auth-mode="register" aria-pressed="false">Register</button>
+        </div>
+
+        <form class="auth-form" data-auth-form="login">
+          <label class="form-field">
+            Email
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+          <label class="form-field">
+            Password
+            <input type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+          </label>
+          <button class="auth-submit" type="submit">Login</button>
+        </form>
+
+        <form class="auth-form" data-auth-form="register" hidden>
+          <label class="form-field">
+            Email
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+          <label class="form-field">
+            Password
+            <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+          </label>
+          <button class="auth-submit" type="submit">Create farmer account</button>
+        </form>
+
+        <p class="auth-status" aria-live="polite"></p>
+        <a class="back-link" href="./index.html">← Back to user selection</a>
+      </section>
+    </main>
+  </body>
+</html>

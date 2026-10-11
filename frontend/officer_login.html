@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#174a2e">
+    <title>Officer Login | Farm Portal</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <section class="user-selector auth-selector" aria-labelledby="page-title" data-auth-page data-role="OFFICER">
+        <h1 id="page-title">Officer Account</h1>
+        <p class="description">Sign in or create your officer account.</p>
+
+        <div class="auth-tabs" role="group" aria-label="Account option">
+          <button class="auth-tab" type="button" data-auth-mode="login" aria-pressed="true">Login</button>
+          <button class="auth-tab" type="button" data-auth-mode="register" aria-pressed="false">Register</button>
+        </div>
+
+        <form class="auth-form" data-auth-form="login">
+          <label class="form-field">
+            Email
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+          <label class="form-field">
+            Password
+            <input type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+          </label>
+          <button class="auth-submit" type="submit">Login</button>
+        </form>
+
+        <form class="auth-form" data-auth-form="register" hidden>
+          <label class="form-field">
+            Full Name
+            <input type="text" name="full_name" autocomplete="name" placeholder="Enter officer full name" required>
+          </label>
+          <label class="form-field">
+            Phone Number
+            <input type="tel" name="phone" autocomplete="tel" placeholder="e.g. 9847123456" pattern="[0-9+() .-]{7,15}" required>
+          </label>
+          <label class="form-field">
+            Email Address
+            <input type="email" name="email" autocomplete="email" placeholder="officer@agri.gov.in" required>
+          </label>
+          <label class="form-field">
+            Password
+            <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+          </label>
+          <label class="form-field">
+            Official Designation
+            <input type="text" name="designation" value="Agricultural Officer" placeholder="e.g. Agricultural Officer" required>
+          </label>
+          <label class="form-field">
+            Governing Gram Panchayath (Jurisdiction)
+            <select class="form-select" id="register-officer-panchayath" name="panchayath_id" required>
+              <option value="">Loading Gram Panchayaths…</option>
+            </select>
+            <small style="color: #687067; font-size: 0.8rem; margin-top: 4px;">You will be authorized to review &amp; approve subsidies for farmers in this Gram Panchayath.</small>
+          </label>
+          <label class="form-field">
+            Assigned Agriculture Office / Krishi Bhavan
+            <select class="form-select" id="register-officer-office" name="office_id" required>
+              <option value="">Loading Agriculture Offices…</option>
+            </select>
+          </label>
+          <button class="auth-submit" type="submit">Create &amp; Register Officer Account</button>
+        </form>
+
+        <p class="auth-status" aria-live="polite"></p>
+        <a class="back-link" href="./index.html">← Back to user selection</a>
+      </section>
+    </main>
+  </body>
+</html>
