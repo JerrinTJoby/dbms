@@ -599,27 +599,128 @@ def handle_update_profile(
             cursor.close()
 
 
-def get_lookup_data(path: str) -> dict[str, Any]:
-    if path == "/api/panchayaths":
-        query = """
-            SELECT panchayath_id, panchayath_name, district, office_id
-            FROM Panchayaths
-            ORDER BY panchayath_name
-        """
-        key = "panchayaths"
-    else:
-        query = """
-            SELECT office_id, office_name
-            FROM Agriculture_Offices
-            ORDER BY office_name
-        """
-        key = "offices"
+def seed_catalog_data(connection) -> None:
+    cursor = connection.cursor()
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+    cursor.execute("SHOW TABLES")
+    existing_tables = {row[0].lower(): row[0] for row in cursor.fetchall()}
 
+    def tbl(name: str) -> str:
+        return existing_tables.get(name.lower(), name)
+
+    offices_tbl = tbl("Agriculture_Offices")
+    panchayaths_tbl = tbl("Panchayaths")
+    crops_tbl = tbl("Crops")
+    fertilizers_tbl = tbl("Fertilizers")
+    labour_tbl = tbl("Labour_Types")
+    rental_tbl = tbl("Rental_Types")
+    energy_tbl = tbl("Energy_Types")
+    subsidies_tbl = tbl("Subsidies")
+
+    cursor.execute(
+        f"REPLACE INTO `{offices_tbl}` (office_id, office_name, phone, email, address) VALUES "
+        "(1, 'Krishi Bhavan - Palakkad Central', '0491-2501234', 'kb.palakkad@agri.gov.in', 'Civil Station Complex, Palakkad'), "
+        "(2, 'Krishi Bhavan - Alathur', '0492-2223456', 'kb.alathur@agri.gov.in', 'Main Road, Alathur, Palakkad'), "
+        "(3, 'Krishi Bhavan - Chittur', '0492-3256789', 'kb.chittur@agri.gov.in', 'Taluk Office Road, Chittur'), "
+        "(4, 'Krishi Bhavan - Thrissur Central', '0487-2334455', 'kb.thrissur@agri.gov.in', 'Ayyanthole, Thrissur')"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{panchayaths_tbl}` (panchayath_id, panchayath_name, district, office_id) VALUES "
+        "(1, 'Pirayiri Gram Panchayath', 'Palakkad', 1), "
+        "(2, 'Marutharode Gram Panchayath', 'Palakkad', 1), "
+        "(3, 'Kannadi Gram Panchayath', 'Palakkad', 1), "
+        "(4, 'Alathur Gram Panchayath', 'Palakkad', 2), "
+        "(5, 'Kuzhalmannam Gram Panchayath', 'Palakkad', 2), "
+        "(6, 'Kavassery Gram Panchayath', 'Palakkad', 2), "
+        "(7, 'Vadakkencherry Gram Panchayath', 'Palakkad', 2), "
+        "(8, 'Chittur-Thathamangalam', 'Palakkad', 3), "
+        "(9, 'Pattanchery Gram Panchayath', 'Palakkad', 3), "
+        "(10, 'Perumatty Gram Panchayath', 'Palakkad', 3), "
+        "(11, 'Ollur Gram Panchayath', 'Thrissur', 4), "
+        "(12, 'Nadathara Gram Panchayath', 'Thrissur', 4), "
+        "(13, 'Puzhakkal Gram Panchayath', 'Thrissur', 4)"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{crops_tbl}` (crop_id, crop_name, crop_category, season, growth_duration_days, expected_yield_per_acre) VALUES "
+        "(1, 'Rice', 'Cereal', 'Kharif', 120, 2200.00), "
+        "(2, 'Wheat', 'Cereal', 'Rabi', 120, 1800.00)"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{fertilizers_tbl}` (fertilizer_id, fertilizer_name, fertilizer_type, unit) VALUES "
+        "(1, 'Urea (46% N)', 'Chemical', 'kg'), "
+        "(2, 'Factamfos (20:20:0:13)', 'Complex Chemical', 'kg'), "
+        "(3, 'Muriate of Potash (MOP)', 'Chemical', 'kg'), "
+        "(4, 'DAP (18:46:0)', 'Chemical', 'kg'), "
+        "(5, 'Neem Cake Organic Fertilizer', 'Organic', 'kg'), "
+        "(6, 'Vermicompost', 'Organic', 'kg')"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{labour_tbl}` (labour_id, labour_name, standard_daily_rate) VALUES "
+        "(1, 'Land Preparation & Ploughing', 950.00), "
+        "(2, 'Transplanting & Sowing', 850.00), "
+        "(3, 'Weeding & Intercultivation', 800.00), "
+        "(4, 'Fertilizer & Pesticide Application', 900.00), "
+        "(5, 'Harvesting & Threshing', 950.00)"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{rental_tbl}` (rental_id, rental_name, description) VALUES "
+        "(1, 'Tractor (45 HP) with Cultivator', 'Heavy mechanized land tillage equipment'), "
+        "(2, 'Power Tiller', 'Two-wheel tillage machine suitable for paddy wet fields'), "
+        "(3, 'Combined Harvester', 'Tracked paddy harvesting and threshing machine'), "
+        "(4, 'Diesel Irrigation Pump Set (5 HP)', 'Centrifugal high flow water pump')"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{energy_tbl}` (energy_id, energy_name) VALUES "
+        "(1, 'Agricultural Grid Electricity'), "
+        "(2, 'Diesel for Pump/Tractor'), "
+        "(3, 'Solar Water Pump Power')"
+    )
+
+    cursor.execute(
+        f"REPLACE INTO `{subsidies_tbl}` (subsidy_id, subsidy_name, description, amount, start_date, end_date, eligibility_criteria) VALUES "
+        "(1, 'Subhiksha Keralam Paddy Assistance', 'Direct financial aid per acre for active paddy cultivation.', 5500.00, '2026-01-01', '2026-12-31', 'Paddy farmers with registered land in Kerala'), "
+        "(2, 'Organic Farming Incentive Scheme', 'Subsidy for adopting organic inputs and vermicomposting.', 8000.00, '2026-04-01', '2027-03-31', 'Certified organic or transitioning crop producers'), "
+        "(3, 'Farm Mechanization Equipment Grant', '50% grant on hiring or procuring approved agricultural machinery.', 15000.00, '2026-01-01', '2026-12-31', 'Small and marginal farmers holding up to 5 acres'), "
+        "(4, 'Micro-Irrigation Drip System Grant', 'Assistance for installation of drip and sprinkler irrigation.', 12000.00, '2026-02-01', '2026-11-30', 'Horticulture crop growers with dependable water source')"
+    )
+
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+    connection.commit()
+    cursor.close()
+    print("Catalog seed data populated successfully!", flush=True)
+
+
+def get_lookup_data(path: str) -> dict[str, Any]:
     with database_connection() as connection:
         cursor = connection.cursor(dictionary=True)
         try:
+            cursor.execute("SHOW TABLES")
+            existing_tables = {row[0].lower(): row[0] for row in cursor.fetchall()}
+
+            if path == "/api/panchayaths":
+                tbl_name = existing_tables.get("panchayaths", "Panchayaths")
+                query = f"SELECT panchayath_id, panchayath_name, district, office_id FROM `{tbl_name}` ORDER BY panchayath_name"
+                key = "panchayaths"
+            else:
+                tbl_name = existing_tables.get("agriculture_offices", "Agriculture_Offices")
+                query = f"SELECT office_id, office_name FROM `{tbl_name}` ORDER BY office_name"
+                key = "offices"
+
             cursor.execute(query)
-            return {key: cursor.fetchall()}
+            rows = cursor.fetchall()
+            if not rows:
+                print(f"{key} is empty! Auto-seeding catalog...", flush=True)
+                seed_catalog_data(connection)
+                cursor.execute(query)
+                rows = cursor.fetchall()
+
+            return {key: rows}
         finally:
             cursor.close()
 
@@ -2251,8 +2352,12 @@ def application(environ: dict[str, Any], start_response: Any) -> list[bytes]:
             result = handle_update_profile(parse_json_body(environ), user)
             return json_response(start_response, 200, result)
 
+        if path == "/api/seed" and method == "GET":
+            with database_connection() as connection:
+                seed_catalog_data(connection)
+            return json_response(start_response, 200, {"status": "ok", "message": "Master catalog seeded successfully."})
+
         if path in ("/api/panchayaths", "/api/offices") and method == "GET":
-            init_database_if_needed()
             return json_response(start_response, 200, get_lookup_data(path))
 
         if path == "/api/reference-data" and method == "GET":
