@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agriculture Management System - Full Technical Architecture & Hosting Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-right {
+      content: counter(page);
+      font-size: 9pt;
+      color: #666;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #222;
+    line-height: 1.55;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    color: #174a2e;
+    font-size: 22pt;
+    border-bottom: 3px solid #174a2e;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    color: #555;
+    font-size: 12pt;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  h2 {
+    color: #174a2e;
+    font-size: 14pt;
+    border-bottom: 1.5px solid #d4e3d9;
+    padding-bottom: 4px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+  }
+  h3 {
+    color: #287647;
+    font-size: 11.5pt;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  p, ul, ol {
+    margin-top: 4px;
+    margin-bottom: 10px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+  .badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #1b5e20;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+  .callout {
+    background: #f4f8f5;
+    border-left: 4px solid #287647;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  .callout-warning {
+    background: #fdfaf3;
+    border-left: 4px solid #e6b74e;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  pre, code {
+    font-family: Consolas, "SFMono-Regular", Menlo, Monaco, "Courier New", monospace;
+  }
+  code {
+    background: #f0f3f1;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    color: #9c27b0;
+  }
+  pre {
+    background: #1e2420;
+    color: #e0e8e3;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-size: 9pt;
+    line-height: 1.45;
+    overflow-x: auto;
+    margin: 8px 0 14px 0;
+    page-break-inside: avoid;
+  }
+  pre .keyword { color: #e5c07b; font-weight: bold; }
+  pre .string { color: #98c379; }
+  pre .comment { color: #7f8c8d; font-style: italic; }
+  pre .func { color: #61afef; }
+  pre .sql { color: #d19a66; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #d4ded7;
+    padding: 7px 10px;
+    text-align: left;
+  }
+  th {
+    background-color: #e8f1eb;
+    color: #174a2e;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background-color: #fcfdfc;
+  }
+  .diagram-box {
+    background: #f9fbf9;
+    border: 1.5px solid #c2d6c9;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 14px 0;
+    text-align: center;
+    font-family: monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    white-space: pre;
+    page-break-inside: avoid;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .viva-box {
+    background: #fffdf9;
+    border: 1.5px solid #d6b88d;
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  .viva-q {
+    color: #795331;
+    font-weight: 700;
+    font-size: 10.5pt;
+    margin-bottom: 4px;
+  }
+  .viva-a {
+    color: #2c3e50;
+    font-size: 10pt;
+  }
+</style>
+</head>
+<body>
+
+<h1>Agriculture Management System</h1>
+<div class="subtitle">Complete Technical Architecture, Data Lifecycle & Cloud Hosting Documentation</div>
+
+<div class="callout">
+  <strong>Document Purpose:</strong> This document provides a complete, step-by-step breakdown of how the frontend interacts with the relational database (MySQL) through the application tier, followed by an in-depth walkthrough of the containerized cloud hosting architecture on Railway PaaS. Use this as your comprehensive reference for project defense, viva voce, and system presentation.
+</div>
+
+<h2>1. Executive Summary & High-Level Architecture</h2>
+<p>
+  The <strong>Agriculture Management System</strong> is engineered as an enterprise-grade <strong>3-Tier Web Application</strong>. It strictly decouples user presentation from business rules and data persistence, ensuring security, scalability, and strict jurisdictional access control.
+</p>
+
+<div class="diagram-box">
++-----------------------------------------------------------------------------------+
+|                            TIER 1: PRESENTATION (CLIENT)                          |
+|  - HTML5 (Semantic Structure) | CSS3 (Dark Earth Theme) | Vanilla JS (ES6 Engine)  |
+|  - Event Listeners, DOM Manipulation, Fetch API, LocalStorage (JWT Token)          |
++-----------------------------------------------------------------------------------+
+                                       |
+                   HTTP / HTTPS JSON Requests (REST API)
+                  Headers: [Authorization: Bearer &lt;JWT&gt;]
+                                       v
++-----------------------------------------------------------------------------------+
+|                        TIER 2: APPLICATION / BUSINESS LOGIC                       |
+|  - Python WSGI Web Application (app.py) hosted on Gunicorn Workers                |
+|  - JWT Authentication, Role Authorization (FARMER vs OFFICER)                     |
+|  - Parameterized Query Construction, Auto-Schema Initializer                      |
++-----------------------------------------------------------------------------------+
+                                       |
+                   Internal TCP Socket / Private Network (Port 3306)
+                  MySQL Connector with Parameterized Bind Variables
+                                       v
++-----------------------------------------------------------------------------------+
+|                          TIER 3: DATA PERSISTENCE (DATABASE)                      |
+|  - MySQL 8.0 Relational Engine (InnoDB Storage Engine)                            |
+|  - 18 Relational Tables, ACID Transactions, Foreign Keys, Referential Integrity   |
+|  - Persistent Cloud Docker Volume (mysql-volume)                                  |
++-----------------------------------------------------------------------------------+
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Technologies Used</th>
+      <th>Primary Responsibilities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Client Tier</strong></td>
+      <td>HTML5, CSS3, Vanilla ES6 JavaScript</td>
+      <td>Renders UI, captures user input, client validation, sends asynchronous HTTP <code>fetch()</code> requests, updates DOM with responses.</td>
+    </tr>
+    <tr>
+      <td><strong>Application Tier</strong></td>
+      <td>Python 3.11, WSGI (PEP 3333), Gunicorn, MySQL Connector</td>
+      <td>API Routing, JWT verification, Role-based authorization, PBKDF2 password hashing, SQL statement generation, JSON serialization.</td>
+    </tr>
+    <tr>
+      <td><strong>Database Tier</strong></td>
+      <td>MySQL 8.0, InnoDB Engine</td>
+      <td>Guarantees ACID transactions, enforces primary/foreign key constraints, stores relations across users, officers, farms, crops, expenses, subsidies.</td>
+    </tr>
+    <tr>
+      <td><strong>Cloud Hosting</strong></td>
+      <td>Docker, Railway PaaS, Private Mesh Network</td>
+      <td>Container orchestration, automatic SSL termination, private internal DNS, persistent block volume storage.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>2. The End-to-End Request & Data Lifecycle</h2>
+<p>
+  To explain how the frontend connects to SQL, let us walk through a concrete user journey: <strong>A Farmer logging in and registering a new Farm with land area and soil type</strong>.
+</p>
+
+<h3>Step 1: User Action in Browser (Frontend DOM Event)</h3>
+<p>
+  The user enters the farm name (<code>"Green Valley"</code>), area (<code>5.5</code> acres), and soil type (<code>"Alluvial"</code>) into the form on <code>farmer_dashboard.html</code> and clicks <strong>"Save Farm"</strong>.
+</p>
+<ul>
+  <li>In <code>app.js</code>, an event listener intercepts the form submission:</li>
+</ul>
+<pre><span class="comment">// frontend/app.js</span>
+<span class="keyword">const</span> farmForm = document.<span class="func">getElementById</span>(<span class="string">"farm-form"</span>);
+farmForm.<span class="func">addEventListener</span>(<span class="string">"submit"</span>, <span class="keyword">async</span> (event) =&gt; {
+    event.<span class="func">preventDefault</span>(); <span class="comment">// Prevents default page reload</span>
+    
+    <span class="keyword">const</span> payload = {
+        farm_name: document.<span class="func">getElementById</span>(<span class="string">"farm_name"</span>).value.<span class="func">trim</span>(),
+        area_acres: parseFloat(document.<span class="func">getElementById</span>(<span class="string">"area_acres"</span>).value),
+        soil_type: document.<span class="func">getElementById</span>(<span class="string">"soil_type"</span>).value
+    };
+    
+    <span class="keyword">await</span> <span class="func">apiFetch</span>(<span class="string">"/api/farmer/farms"</span>, {
+        method: <span class="string">"POST"</span>,
+        body: JSON.<span class="func">stringify</span>(payload)
+    });
+});</pre>
+
+<h3>Step 2: HTTP Network Transmission (Fetch API &amp; Security Header)</h3>
+<p>
+  The browser's JavaScript runtime cannot and must never connect directly to MySQL (which would expose database passwords in the browser). Instead, it calls the helper function <code>apiFetch()</code>:
+</p>
+<ul>
+  <li>It attaches the user's secret session token stored in <code>localStorage</code>:</li>
+</ul>
+<pre><span class="comment">// Headers sent over HTTPS:</span>
+POST /api/farmer/farms HTTP/1.1
+Host: dbms-production-f338.up.railway.app
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImV4cCI6MTc5MT...
+Accept: application/json
+
+{"farm_name": "Green Valley", "area_acres": 5.5, "soil_type": "Alluvial"}</pre>
+
+<h3>Step 3: Web Server &amp; WSGI Gateway Routing</h3>
+<ol>
+  <li><strong>Railway Edge Router:</strong> Accepts the HTTPS request, handles SSL/TLS termination, and forwards plain HTTP internally to port <code>8000/8080</code> where the container listens.</li>
+  <li><strong>Gunicorn WSGI Master &amp; Worker:</strong> Gunicorn manages a pool of pre-forked worker processes. A worker picks up the connection and hands the standard WSGI environment dictionary <code>environ</code> to Python's <code>application(environ, start_response)</code> function.</li>
+  <li><strong>Endpoint Dispatching:</strong> In <code>backend/app.py</code>:</li>
+</ol>
+<pre><span class="comment"># backend/app.py</span>
+path = urlsplit(environ.get(<span class="string">"PATH_INFO"</span>, <span class="string">"/"</span>)).path
+method = environ.get(<span class="string">"REQUEST_METHOD"</span>, <span class="string">"GET"</span>).upper()
+
+<span class="keyword">if</span> path == <span class="string">"/api/farmer/farms"</span> <span class="keyword">and</span> method == <span class="string">"POST"</span>:
+    user = <span class="func">authenticated_user</span>(environ, <span class="string">"FARMER"</span>) <span class="comment"># Verifies JWT &amp; Role</span>
+    payload = <span class="func">parse_json_body</span>(environ)
+    result = <span class="func">handle_create_farm</span>(payload, user)
+    <span class="keyword">return</span> <span class="func">json_response</span>(start_response, 201, result)</pre>
+
+<div class="page-break"></div>
+
+<h3>Step 4: Authentication &amp; Role-Based Authorization</h3>
+<p>
+  Before any SQL query touches the database, the server runs <code>authenticated_user()</code>:
+</p>
+<ul>
+  <li>Extracts the token from <code>HTTP_AUTHORIZATION</code> header.</li>
+  <li>Verifies HMAC-SHA256 signature against <code>APP_SECRET_KEY</code> to confirm it was not tampered with.</li>
+  <li>Checks token expiration (<code>exp &gt; time.time()</code>).</li>
+  <li>Verifies that the user's role in the database is strictly <code>FARMER</code>. If an officer or unauthenticated visitor attempts this endpoint, execution immediately aborts with <code>HTTP 403 Forbidden</code>.</li>
+</ul>
+
+<h3>Step 5: Database Connection &amp; Parameterized SQL Execution</h3>
+<p>
+  Once authorized, the server calls the business logic function:
+</p>
+<pre><span class="comment"># backend/app.py</span>
+<span class="keyword">def</span> <span class="func">handle_create_farm</span>(payload: dict, user: dict) -&gt; dict:
+    <span class="comment"># 1. Fetch farmer_id linked to user_id</span>
+    farmer_id = <span class="func">get_farmer_id</span>(user[<span class="string">"user_id"</span>])
+    
+    <span class="comment"># 2. Acquire safe database connection</span>
+    <span class="keyword">with</span> <span class="func">database_connection</span>() <span class="keyword">as</span> connection:
+        cursor = connection.<span class="func">cursor</span>()
+        
+        <span class="comment"># 3. Parameterized INSERT Query (prevents SQL injection)</span>
+        sql = <span class="string">"""
+            INSERT INTO Farms (farmer_id, farm_name, location, area_acres, soil_type, irrigation_type)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """</span>
+        params = (
+            farmer_id,
+            payload[<span class="string">"farm_name"</span>],
+            payload[<span class="string">"location"</span>],
+            payload[<span class="string">"area_acres"</span>],
+            payload.get(<span class="string">"soil_type"</span>),
+            payload.get(<span class="string">"irrigation_type"</span>)
+        )
+        cursor.<span class="func">execute</span>(sql, params)
+        connection.<span class="func">commit</span>() <span class="comment"># Enforces ACID Durability</span>
+        
+        new_farm_id = cursor.lastrowid
+        <span class="keyword">return</span> {<span class="string">"message"</span>: <span class="string">"Farm registered successfully"</span>, <span class="string">"farm_id"</span>: new_farm_id}</pre>
+
+<div class="callout-warning">
+  <strong>Vital Viva Point — Why Parameterized Queries?</strong>
+  Notice the use of <code>%s</code> placeholders instead of Python string formatting (<code>f"INSERT ... {payload['farm_name']}"</code>).
+  With parameterized queries, MySQL treats parameters strictly as <strong>literal data</strong>, never as executable SQL commands. This completely prevents <strong>SQL Injection attacks</strong> (such as <code>"'; DROP TABLE Farms; --"</code>).
+</div>
+
+<h3>Step 6: MySQL Transaction &amp; Constraint Verification</h3>
+<p>
+  Inside MySQL's InnoDB engine:
+</p>
+<ol>
+  <li><strong>Foreign Key Check:</strong> MySQL validates that <code>farmer_id</code> exists in the <code>Farmers</code> table. If the ID does not exist, MySQL rejects the transaction with a foreign key violation.</li>
+  <li><strong>CHECK Constraint:</strong> The table defines <code>CHECK (area_acres &gt; 0)</code>. If a user entered <code>-5</code>, MySQL rejects it immediately.</li>
+  <li><strong>Transaction Commit:</strong> The row is written to the redo log and committed with ACID compliance.</li>
+</ol>
+
+<h3>Step 7: Response Serialization &amp; DOM Update</h3>
+<ol>
+  <li>The Python server packages the result dictionary into JSON, encodes it to UTF-8 bytes, and sends response headers (<code>HTTP/1.1 201 Created</code>, <code>Content-Type: application/json</code>).</li>
+  <li>The browser's <code>await fetch()</code> resolves. The JavaScript engine parses the JSON:</li>
+</ol>
+<pre><span class="comment">// frontend/app.js</span>
+<span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="func">json</span>();
+<span class="func">showToast</span>(<span class="string">"Farm added successfully!"</span>, <span class="string">"success"</span>);
+<span class="comment">// Immediately reload farms table dynamically without full page refresh</span>
+<span class="func">loadFarmerFarms</span>();</pre>
+
+<div class="page-break"></div>
+
+<h2>3. Database Schema &amp; Relational Architecture</h2>
+<p>
+  The system consists of <strong>18 interrelated base tables</strong> and <strong>1 directory view</strong>, maintaining 3NF (Third Normal Form) normalization:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Table Name</th>
+      <th>Primary Key</th>
+      <th>Foreign Keys &amp; Dependencies</th>
+      <th>Core Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Users</code></td>
+      <td><code>user_id</code></td>
+      <td>None (Root table)</td>
+      <td>Stores authentication credentials (email, hashed password, role).</td>
+    </tr>
+    <tr>
+      <td><code>Agriculture_Offices</code></td>
+      <td><code>office_id</code></td>
+      <td>None</td>
+      <td>Krishi Bhavans / Regional agricultural administrative offices.</td>
+    </tr>
+    <tr>
+      <td><code>Panchayaths</code></td>
+      <td><code>panchayath_id</code></td>
+      <td><code>office_id</code> &rarr; <code>Agriculture_Offices</code></td>
+      <td>Gram Panchayaths falling under specific Krishi Bhavan jurisdictions.</td>
+    </tr>
+    <tr>
+      <td><code>Officers</code></td>
+      <td><code>officer_id</code></td>
+      <td><code>user_id</code> &rarr; <code>Users</code>, <code>office_id</code> &rarr; <code>Offices</code></td>
+      <td>Agricultural officers assigned to specific Krishi Bhavan offices.</td>
+    </tr>
+    <tr>
+      <td><code>Farmers</code></td>
+      <td><code>farmer_id</code></td>
+      <td><code>user_id</code> &rarr; <code>Users</code>, <code>panchayath_id</code> &rarr; <code>Panchayaths</code></td>
+      <td>Farmer profiles bound to their local Gram Panchayath.</td>
+    </tr>
+    <tr>
+      <td><code>Farms</code></td>
+      <td><code>farm_id</code></td>
+      <td><code>farmer_id</code> &rarr; <code>Farmers</code></td>
+      <td>Individual agricultural land parcels owned by farmers.</td>
+    </tr>
+    <tr>
+      <td><code>Crops</code></td>
+      <td><code>crop_id</code></td>
+      <td>None (Master Catalog)</td>
+      <td>Approved crop catalog (strictly configured for Rice and Wheat).</td>
+    </tr>
+    <tr>
+      <td><code>Farm_Crops</code></td>
+      <td><code>farm_crop_id</code></td>
+      <td><code>farm_id</code>, <code>crop_id</code></td>
+      <td>Cultivation records: Season, planting date, harvest date, area, status.</td>
+    </tr>
+    <tr>
+      <td><code>Expenses</code></td>
+      <td><code>expense_id</code></td>
+      <td><code>farm_id</code>, <code>farm_crop_id</code>, <code>rental_id</code>, <code>energy_id</code></td>
+      <td>Farm expenditures (Seeds, equipment rental, energy, irrigation).</td>
+    </tr>
+    <tr>
+      <td><code>Income</code></td>
+      <td><code>income_id</code></td>
+      <td><code>farm_crop_id</code></td>
+      <td>Crop sales with automatically computed virtual column <code>total_income</code>.</td>
+    </tr>
+    <tr>
+      <td><code>Subsidies</code></td>
+      <td><code>subsidy_id</code></td>
+      <td>None (Master Catalog)</td>
+      <td>Government schemes (Subhiksha Keralam, Organic Farming, Machinery).</td>
+    </tr>
+    <tr>
+      <td><code>Farmer_Subsidies</code></td>
+      <td><code>farmer_subsidy_id</code></td>
+      <td><code>farmer_id</code>, <code>subsidy_id</code>, <code>officer_id</code></td>
+      <td>Application lifecycle: PENDING &rarr; APPROVED &rarr; REJECTED with strict officer jurisdiction checks.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Jurisdictional Approval Enforcement:</strong>
+  When an officer attempts to approve a subsidy (<code>POST /api/officer/subsidies/review</code>), the backend executes an inner join verifying that the applicant farmer's Gram Panchayath belongs to the officer's designated Krishi Bhavan:
+  <code>p.office_id = o.office_id</code>. If an officer from Thrissur attempts to approve a Palakkad farm application, the system blocks the transaction with <code>HTTP 403 Jurisdictional Violation</code>.
+</div>
+
+<div class="page-break"></div>
+
+<h2>4. Cloud Hosting Architecture (Railway PaaS &amp; Docker)</h2>
+<p>
+  The system is hosted in the cloud on <strong>Railway</strong> using modern containerization and micro-networking.
+</p>
+
+<div class="diagram-box">
+               PUBLIC INTERNET (HTTPS / TLS 1.3)
+                             |
+                             v
+               +---------------------------+
+               |   Railway Edge Router     |
+               | (SSL Cert: Let's Encrypt) |
+               +---------------------------+
+                             |
+         Internal HTTP (Port 8080) on Private Mesh
+                             v
+         +---------------------------------------+
+         |     Service 1: Web App (dbms)         |
+         |  - Container: Python 3.11-slim        |
+         |  - WSGI Server: Gunicorn (3 workers)  |
+         |  - Serves: HTML, CSS, JS + REST APIs  |
+         +---------------------------------------+
+                             |
+       Internal Encrypted WireGuard Network:
+       Host: mysql.railway.internal:3306
+                             v
+         +---------------------------------------+
+         |     Service 2: MySQL Database         |
+         |  - Container: MySQL 8.0               |
+         |  - Storage: Persistent Block Volume   |
+         |    (Mounted to /var/lib/mysql)        |
+         +---------------------------------------+
+</div>
+
+<h3>1. Docker Containerization (`Dockerfile`)</h3>
+<p>
+  Instead of relying on server-specific configurations, the web application is packaged inside an isolated Linux container:
+</p>
+<pre><span class="keyword">FROM</span> python:3.11-slim
+<span class="keyword">WORKDIR</span> /app
+<span class="keyword">COPY</span> backend/requirements.txt ./backend/requirements.txt
+<span class="keyword">RUN</span> pip install --no-cache-dir -r backend/requirements.txt gunicorn
+<span class="keyword">COPY</span> . .
+<span class="keyword">EXPOSE</span> 8000
+<span class="keyword">CMD</span> ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 backend.app:application"]</pre>
+<ul>
+  <li><strong>Port Binding:</strong> Uses <code>${PORT:-8000}</code> because Railway dynamically assigns an internal port (such as <code>8080</code>) at boot time.</li>
+  <li><strong>Workers:</strong> <code>--workers 3</code> runs three independent OS worker processes in parallel to handle concurrent user requests without blocking.</li>
+</ul>
+
+<h3>2. Private Mesh Networking (Security by Isolation)</h3>
+<p>
+  A critical architectural decision in this project: <strong>The MySQL database is NOT exposed to the public internet</strong>.
+</p>
+<ul>
+  <li>Railway creates a private internal DNS: <code>mysql.railway.internal</code>.</li>
+  <li>Only containers within the same Railway project canvas can communicate over port <code>3306</code>.</li>
+  <li>Public attackers on the internet cannot port-scan or brute-force the MySQL database because no public IP or public port exists for it.</li>
+</ul>
+
+<h3>3. Persistent Volume Storage (`mysql-volume`)</h3>
+<p>
+  By default, Docker containers are ephemeral (their files disappear when restarted). To guarantee that user records, registered farms, and applications are never lost:
+</p>
+<ul>
+  <li>Railway mounts a persistent cloud block storage volume to <code>/var/lib/mysql</code>.</li>
+  <li>Even during server reboots, git updates, or redeployments, MySQL data files remain safe and intact on persistent disk.</li>
+</ul>
+
+<h3>4. Self-Initializing Database Engine (`init_database_if_needed()`)</h3>
+<p>
+  To solve the challenge of provisioning a clean database in the cloud without manual SQL imports, our backend incorporates an intelligent auto-migrator:
+</p>
+<pre><span class="keyword">def</span> <span class="func">init_database_if_needed</span>() -&gt; <span class="keyword">None</span>:
+    config = <span class="func">get_database_config</span>()
+    <span class="keyword">if not</span> config.get(<span class="string">"user"</span>):
+        <span class="keyword">return</span>
+    connection = mysql.connector.<span class="func">connect</span>(**config)
+    cursor = connection.<span class="func">cursor</span>()
+    cursor.<span class="func">execute</span>(<span class="string">"SHOW TABLES LIKE 'Users'"</span>)
+    <span class="keyword">if not</span> cursor.<span class="func">fetchone</span>():
+        <span class="comment"># Executes backend/schema.sql (18 Tables + Views)</span>
+        <span class="comment"># Executes backend/seed_catalog.sql (Krishi Bhavans, Panchayaths, Crops, Subsidies)</span>
+        connection.<span class="func">commit</span>()</pre>
+<p>
+  On its very first boot or on the initial health check, the application detects that the database is empty, runs the entire schema, populates reference catalogs, and transitions itself to fully ready.
+</p>
+
+<div class="page-break"></div>
+
+<h2>5. Viva Voce &amp; Presentation Defense Guide</h2>
+<p>
+  Use these standard questions and exact technical answers to confidently present this architecture to your examiners or evaluators.
+</p>
+
+<div class="viva-box">
+  <div class="viva-q">Q1: Can frontend JavaScript connect directly to MySQL? Why or why not?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> No. In web browsers, JavaScript runs in a client-side sandbox and does not have raw TCP socket access to talk directly to MySQL protocol on port 3306. More importantly, connecting directly would require exposing database root credentials in client-side code, which is an extreme security flaw. Instead, the 3-tier model routes requests through an application tier (Python WSGI) using authenticated REST APIs.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q2: How does your application protect against SQL Injection?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> We use <strong>Parameterized Queries</strong> via <code>mysql.connector</code>. All user inputs are passed as separate parameter tuples into <code>cursor.execute(sql, (param1, param2))</code> with <code>%s</code> placeholders. The MySQL driver escapes and treats these values strictly as data literals, preventing malicious SQL code injection.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q3: How are passwords stored and verified securely?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> Passwords are never stored in plain text. We use <strong>PBKDF2 with HMAC-SHA256</strong> with 310,000 iterations and a 16-byte cryptographically secure random salt generated via Python's <code>secrets</code> module. When a user logs in, the entered password is salted and hashed with the same parameters and compared using constant-time comparison (<code>hmac.compare_digest</code>) to prevent timing attacks.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q4: What is the role of Gunicorn and WSGI in your backend?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> WSGI (Web Server Gateway Interface, PEP 3333) is the standard interface between Python web code and HTTP servers. Gunicorn is a production-grade WSGI HTTP server that implements a pre-fork worker model. It starts a master process that manages multiple worker processes (3 workers in our setup), enabling our application to handle concurrent HTTP requests without locking.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q5: How does your hosting setup ensure that data is not lost when containers restart?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> We use a <strong>Persistent Volume</strong> in Railway. While application containers are ephemeral and stateless, the MySQL service card has a cloud block volume mounted to <code>/var/lib/mysql</code>. All database tables, indexes, and transactions are physically written to this persistent volume, ensuring zero data loss during restarts or redeployments.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q6: How do you enforce jurisdictional rules for agricultural officers?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> Through database relational constraints and server-side authorization checks. Each Agricultural Officer belongs to an <code>Agriculture_Office</code> (Krishi Bhavan). Each Farmer belongs to a <code>Panchayath</code> linked to an office. When reviewing subsidies, the query checks <code>panchayaths.office_id = officers.office_id</code>. If an officer tries to review a farmer outside their jurisdiction, the backend rejects it with <code>HTTP 403 Forbidden</code>.
+  </div>
+</div>
+
+<div class="viva-box">
+  <div class="viva-q">Q7: Why did you choose Railway and Docker for deployment?</div>
+  <div class="viva-a">
+    <strong>Answer:</strong> Docker provides reproducibility across operating systems (running the exact same Linux environment in production as in development). Railway provides seamless micro-service orchestration, automated SSL certificate provisioning via Let's Encrypt, and private internal networking between the web tier and database tier.
+  </div>
+</div>
+
+</body>
+</html>
