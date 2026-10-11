@@ -75,10 +75,11 @@ DB_CONFIG = get_database_config()
 
 
 def init_database_if_needed() -> None:
-    if not DB_CONFIG["user"]:
+    config = get_database_config()
+    if not config.get("user"):
         return
     try:
-        connection = mysql.connector.connect(**DB_CONFIG)
+        connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
         cursor.execute("SHOW TABLES LIKE 'Users'")
         has_users = cursor.fetchone()
@@ -91,7 +92,7 @@ def init_database_if_needed() -> None:
                     if stmt:
                         try:
                             cursor.execute(stmt)
-                        except Exception as e:
+                        except Exception:
                             pass
             seed_file = BACKEND_DIR / "seed_catalog.sql"
             if seed_file.exists():
@@ -101,7 +102,7 @@ def init_database_if_needed() -> None:
                     if stmt:
                         try:
                             cursor.execute(stmt)
-                        except Exception as e:
+                        except Exception:
                             pass
             connection.commit()
             print("Database schema and catalog initialized successfully!", flush=True)
@@ -123,10 +124,11 @@ class APIError(Exception):
 
 @contextmanager
 def database_connection() -> Iterator[MySQLConnection]:
-    if not DB_CONFIG["user"]:
+    config = get_database_config()
+    if not config.get("user"):
         raise APIError(503, "Set DB_USER in backend/.env before using the API.")
     try:
-        connection = mysql.connector.connect(**DB_CONFIG)
+        connection = mysql.connector.connect(**config)
     except mysql.connector.Error as error:
         print(f"MySQL connection failed: {error}", file=sys.stderr)
         raise APIError(503, "Database unavailable. Check the MySQL service and backend/.env.") from error
@@ -2217,6 +2219,7 @@ def application(environ: dict[str, Any], start_response: Any) -> list[bytes]:
             return serve_frontend(path, start_response)
 
         if path == "/api/health" and method == "GET":
+            init_database_if_needed()
             with database_connection() as connection:
                 connection.ping(reconnect=False, attempts=1, delay=0)
             return json_response(start_response, 200, {"status": "ok", "database": "connected"})
