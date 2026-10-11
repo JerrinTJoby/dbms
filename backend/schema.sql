@@ -3,8 +3,6 @@
 -- Database: AgricultureDB
 -- =====================================================
 
-CREATE DATABASE IF NOT EXISTS AgricultureDB;
-USE AgricultureDB;
 
 -- 1. USERS (Minimal Registration)
 CREATE TABLE Users (

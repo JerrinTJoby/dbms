@@ -46,13 +46,53 @@ load_environment_file()
 
 APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY", "Jerrin@!1530")
 DB_CONFIG = {
-    "host": os.environ.get("DB_HOST", "127.0.0.1"),
-    "port": int(os.environ.get("DB_PORT", "3306")),
-    "database": os.environ.get("DB_NAME", "AgricultureDB"),
-    "user": os.environ.get("DB_USER", ""),
-    "password": os.environ.get("DB_PASSWORD", "Jerrin@!1530"),
+    "host": os.environ.get("DB_HOST") or os.environ.get("MYSQLHOST", "127.0.0.1"),
+    "port": int(os.environ.get("DB_PORT") or os.environ.get("MYSQLPORT", "3306")),
+    "database": os.environ.get("DB_NAME") or os.environ.get("MYSQLDATABASE", "AgricultureDB"),
+    "user": os.environ.get("DB_USER") or os.environ.get("MYSQLUSER", ""),
+    "password": os.environ.get("DB_PASSWORD") or os.environ.get("MYSQLPASSWORD", "Jerrin@!1530"),
     "connection_timeout": 5,
 }
+
+
+def init_database_if_needed() -> None:
+    if not DB_CONFIG["user"]:
+        return
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        cursor.execute("SHOW TABLES LIKE 'Users'")
+        has_users = cursor.fetchone()
+        if not has_users:
+            print("Initializing database tables from schema.sql...", flush=True)
+            schema_file = BACKEND_DIR / "schema.sql"
+            if schema_file.exists():
+                for stmt in schema_file.read_text(encoding="utf-8").split(";"):
+                    stmt = stmt.strip()
+                    if stmt:
+                        try:
+                            cursor.execute(stmt)
+                        except Exception as e:
+                            pass
+            seed_file = BACKEND_DIR / "seed_catalog.sql"
+            if seed_file.exists():
+                print("Seeding catalog data from seed_catalog.sql...", flush=True)
+                for stmt in seed_file.read_text(encoding="utf-8").split(";"):
+                    stmt = stmt.strip()
+                    if stmt:
+                        try:
+                            cursor.execute(stmt)
+                        except Exception as e:
+                            pass
+            connection.commit()
+            print("Database schema and catalog initialized successfully!", flush=True)
+        cursor.close()
+        connection.close()
+    except Exception as err:
+        print(f"Database auto-init notice: {err}", file=sys.stderr)
+
+
+init_database_if_needed()
 
 
 class APIError(Exception):
