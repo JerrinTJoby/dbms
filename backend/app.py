@@ -94,18 +94,26 @@ def init_database_if_needed() -> None:
                             cursor.execute(stmt)
                         except Exception:
                             pass
-            seed_file = BACKEND_DIR / "seed_catalog.sql"
-            if seed_file.exists():
-                print("Seeding catalog data from seed_catalog.sql...", flush=True)
-                for stmt in seed_file.read_text(encoding="utf-8").split(";"):
-                    stmt = stmt.strip()
-                    if stmt:
-                        try:
-                            cursor.execute(stmt)
-                        except Exception:
-                            pass
             connection.commit()
-            print("Database schema and catalog initialized successfully!", flush=True)
+
+        # Check if master catalog data is missing
+        cursor.execute("SHOW TABLES LIKE 'panchayaths'")
+        if cursor.fetchone():
+            cursor.execute("SELECT COUNT(*) FROM `panchayaths`")
+            count = cursor.fetchone()[0]
+            if count == 0:
+                print("Panchayaths table is empty. Seeding master catalog...", flush=True)
+                seed_file = BACKEND_DIR / "seed_catalog.sql"
+                if seed_file.exists():
+                    for stmt in seed_file.read_text(encoding="utf-8").split(";"):
+                        stmt = stmt.strip()
+                        if stmt:
+                            try:
+                                cursor.execute(stmt)
+                            except Exception:
+                                pass
+                connection.commit()
+                print("Master catalog successfully seeded!", flush=True)
         cursor.close()
         connection.close()
     except Exception as err:
@@ -2244,10 +2252,12 @@ def application(environ: dict[str, Any], start_response: Any) -> list[bytes]:
             return json_response(start_response, 200, result)
 
         if path in ("/api/panchayaths", "/api/offices") and method == "GET":
+            init_database_if_needed()
             return json_response(start_response, 200, get_lookup_data(path))
 
         if path == "/api/reference-data" and method == "GET":
             authenticated_user(environ)
+            init_database_if_needed()
             return json_response(start_response, 200, get_reference_data())
 
         # Farmer endpoints
