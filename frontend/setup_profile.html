@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#174a2e">
+    <title>Complete Profile | Farm Portal</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <section class="user-selector auth-selector" aria-labelledby="page-title" data-profile-page>
+        <div class="role-badge-container">
+          <span class="role-badge" id="profile-role-badge">Profile Setup</span>
+        </div>
+        <h1 id="page-title">Complete Your Profile</h1>
+        <p class="description">Please enter your verified details to access your dashboard.</p>
+
+        <form class="auth-form" id="profile-form">
+          <label class="form-field">
+            Full Name
+            <input type="text" name="full_name" autocomplete="name" placeholder="Enter your full name" required>
+          </label>
+          <label class="form-field">
+            Phone Number
+            <input type="tel" name="phone" autocomplete="tel" placeholder="e.g. 9847123456" pattern="[0-9+() .-]{7,15}" required>
+          </label>
+
+          <!-- Farmer-specific Fields -->
+          <div data-profile-role="FARMER" hidden>
+            <label class="form-field">
+              Residential Address
+              <input type="text" name="address" autocomplete="street-address" placeholder="House name/no, village, locality" required>
+            </label>
+            <label class="form-field">
+              Governing Gram Panchayath
+              <select class="form-select" id="panchayath-id" name="panchayath_id" required>
+                <option value="">Loading Gram Panchayaths…</option>
+              </select>
+            </label>
+          </div>
+
+          <!-- Officer-specific Fields -->
+          <div data-profile-role="OFFICER" hidden>
+            <label class="form-field">
+              Official Designation
+              <input type="text" name="designation" value="Agricultural Officer" placeholder="e.g. Agricultural Officer" required>
+            </label>
+            <label class="form-field">
+              Governing Gram Panchayath (Jurisdiction)
+              <select class="form-select" id="officer-panchayath-id" name="panchayath_id" required>
+                <option value="">Loading Gram Panchayaths…</option>
+              </select>
+              <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">You will review and approve subsidies for farmers in this Gram Panchayath.</small>
+            </label>
+            <label class="form-field">
+              Assigned Agriculture Office
+              <select class="form-select" id="office-id" name="office_id" required>
+                <option value="">Loading Agriculture Offices…</option>
+              </select>
+            </label>
+          </div>
+
+          <button class="auth-submit" type="submit">Save and Continue</button>
+        </form>
+
+        <p class="auth-status" aria-live="polite"></p>
+        <button class="link-button back-link" type="button" data-logout>← Log out / Switch Account</button>
+      </section>
+    </main>
+  </body>
+</html>
