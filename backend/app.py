@@ -45,14 +45,33 @@ def load_environment_file() -> None:
 load_environment_file()
 
 APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY", "Jerrin@!1530")
-DB_CONFIG = {
-    "host": os.environ.get("DB_HOST") or os.environ.get("MYSQLHOST", "127.0.0.1"),
-    "port": int(os.environ.get("DB_PORT") or os.environ.get("MYSQLPORT", "3306")),
-    "database": os.environ.get("DB_NAME") or os.environ.get("MYSQLDATABASE", "AgricultureDB"),
-    "user": os.environ.get("DB_USER") or os.environ.get("MYSQLUSER", ""),
-    "password": os.environ.get("DB_PASSWORD") or os.environ.get("MYSQLPASSWORD", "Jerrin@!1530"),
-    "connection_timeout": 5,
-}
+def get_database_config() -> dict[str, Any]:
+    db_url = (
+        os.environ.get("DATABASE_URL")
+        or os.environ.get("MYSQL_URL")
+        or os.environ.get("MYSQL_PRIVATE_URL")
+    )
+    if db_url and "://" in db_url:
+        parsed = urlsplit(db_url)
+        return {
+            "host": parsed.hostname or "127.0.0.1",
+            "port": int(parsed.port or 3306),
+            "database": parsed.path.lstrip("/") or "AgricultureDB",
+            "user": unquote(parsed.username or ""),
+            "password": unquote(parsed.password or ""),
+            "connection_timeout": 5,
+        }
+    return {
+        "host": os.environ.get("DB_HOST") or os.environ.get("MYSQLHOST", "127.0.0.1"),
+        "port": int(os.environ.get("DB_PORT") or os.environ.get("MYSQLPORT", "3306")),
+        "database": os.environ.get("DB_NAME") or os.environ.get("MYSQLDATABASE", "AgricultureDB"),
+        "user": os.environ.get("DB_USER") or os.environ.get("MYSQLUSER", ""),
+        "password": os.environ.get("DB_PASSWORD") or os.environ.get("MYSQLPASSWORD", "Jerrin@!1530"),
+        "connection_timeout": 5,
+    }
+
+
+DB_CONFIG = get_database_config()
 
 
 def init_database_if_needed() -> None:
