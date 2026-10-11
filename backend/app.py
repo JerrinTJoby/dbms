@@ -698,11 +698,15 @@ def seed_catalog_data(connection) -> None:
 
 def get_lookup_data(path: str) -> dict[str, Any]:
     with database_connection() as connection:
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         try:
             cursor.execute("SHOW TABLES")
             existing_tables = {row[0].lower(): row[0] for row in cursor.fetchall()}
+        finally:
+            cursor.close()
 
+        dict_cursor = connection.cursor(dictionary=True)
+        try:
             if path == "/api/panchayaths":
                 tbl_name = existing_tables.get("panchayaths", "Panchayaths")
                 query = f"SELECT panchayath_id, panchayath_name, district, office_id FROM `{tbl_name}` ORDER BY panchayath_name"
@@ -712,17 +716,17 @@ def get_lookup_data(path: str) -> dict[str, Any]:
                 query = f"SELECT office_id, office_name FROM `{tbl_name}` ORDER BY office_name"
                 key = "offices"
 
-            cursor.execute(query)
-            rows = cursor.fetchall()
+            dict_cursor.execute(query)
+            rows = dict_cursor.fetchall()
             if not rows:
                 print(f"{key} is empty! Auto-seeding catalog...", flush=True)
                 seed_catalog_data(connection)
-                cursor.execute(query)
-                rows = cursor.fetchall()
+                dict_cursor.execute(query)
+                rows = dict_cursor.fetchall()
 
             return {key: rows}
         finally:
-            cursor.close()
+            dict_cursor.close()
 
 
 def get_officer_farmers(user: dict[str, Any], query_string: str) -> dict[str, Any]:
