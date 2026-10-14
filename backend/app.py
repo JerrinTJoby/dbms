@@ -15,7 +15,8 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import parse_qs, unquote, urlsplit
-from wsgiref.simple_server import make_server
+
+from flask import Flask, Response, request
 
 import mysql.connector
 from mysql.connector import IntegrityError, MySQLConnection
@@ -2500,9 +2501,35 @@ def application(environ: dict[str, Any], start_response: Any) -> list[bytes]:
         )
 
 
+# Flask application instance
+app = Flask(__name__, static_folder=None)
+
+
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+@app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+def flask_gateway(path: str) -> Any:
+    """Dispatches incoming Flask requests seamlessly through our application endpoints."""
+    environ = request.environ
+    response_status = "200 OK"
+    response_headers = []
+
+    def start_response(status: str, headers: list[tuple[str, str]], exc_info: Any = None):
+        nonlocal response_status, response_headers
+        response_status = status
+        response_headers = headers
+
+    body_chunks = application(environ, start_response)
+    status_code = int(response_status.split()[0])
+    response_body = b"".join(body_chunks)
+
+    resp = Response(response_body, status=status_code)
+    for key, val in response_headers:
+        resp.headers[key] = val
+    return resp
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
-    print(f"Farm Portal running at http://127.0.0.1:{port}")
+    print(f"Farm Portal (Flask) running at http://127.0.0.1:{port}")
     print("Press Ctrl+C to stop.")
-    with make_server("127.0.0.1", port, application) as server:
-        server.serve_forever()
+    app.run(host="127.0.0.1", port=port, debug=False)
