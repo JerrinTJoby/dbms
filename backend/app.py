@@ -48,6 +48,8 @@ load_environment_file()
 APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY", "")
 if not APP_SECRET_KEY:
     APP_SECRET_KEY = secrets.token_hex(32)
+
+
 def get_database_config() -> dict[str, Any]:
     db_url = (
         os.environ.get("DATABASE_URL")
