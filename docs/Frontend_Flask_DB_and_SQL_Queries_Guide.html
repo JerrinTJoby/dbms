@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agriculture Management System - Frontend, Flask & Table-Wise SQL Query Manual</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+    @bottom-right {
+      content: "Page " counter(page);
+      font-size: 8.5pt;
+      color: #718096;
+    }
+    @bottom-left {
+      content: "Agriculture Management System | Engineering & Database Query Manual";
+      font-size: 8.5pt;
+      color: #718096;
+    }
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1a202c;
+    line-height: 1.55;
+    font-size: 9.8pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cover {
+    page-break-after: always;
+    padding-top: 55px;
+    text-align: center;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: #e6f4ea;
+    color: #137333;
+    font-weight: 700;
+    font-size: 11pt;
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+  }
+  .cover h1 {
+    font-size: 26pt;
+    color: #0d381e;
+    margin-bottom: 12px;
+    line-height: 1.25;
+    border: none;
+    padding: 0;
+  }
+  .cover-sub {
+    font-size: 12.5pt;
+    color: #4a5568;
+    max-width: 650px;
+    margin: 0 auto 35px auto;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .cover-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-width: 550px;
+    margin: 40px auto;
+    text-align: left;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 24px;
+    font-size: 9.5pt;
+  }
+  .cover-meta-item strong {
+    color: #1a202c;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .cover-meta-item span {
+    color: #4a5568;
+  }
+
+  h1, h2, h3, h4 {
+    color: #0f3e21;
+    font-weight: 700;
+  }
+  h1 {
+    font-size: 18pt;
+    border-bottom: 2.5px solid #137333;
+    padding-bottom: 6px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+  }
+  h2 {
+    font-size: 13pt;
+    border-bottom: 1.5px solid #c6e1cf;
+    padding-bottom: 4px;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #1b5e20;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 10pt;
+    color: #2e7d32;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+  }
+  ul, ol {
+    margin: 0 0 10px 0;
+    padding-left: 22px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+
+  .diagram-box {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0 16px 0;
+    page-break-inside: avoid;
+  }
+
+  pre {
+    background: #1a202c;
+    color: #edf2f7;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    margin: 8px 0 12px 0;
+    overflow-x: auto;
+    page-break-inside: avoid;
+  }
+  code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.8pt;
+    background: #edf2f7;
+    color: #c53030;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px 0;
+    font-size: 8.8pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: #0f3e21;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  .callout {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 9.2pt;
+    page-break-inside: avoid;
+  }
+  .callout-title {
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .callout-blue {
+    background: #f0f9ff;
+    border-left: 4px solid #0284c7;
+  }
+  .callout-blue .callout-title {
+    color: #0369a1;
+  }
+  .callout-amber {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+  }
+  .callout-amber .callout-title {
+    color: #b45309;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 7.8pt;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .badge-get { background: #e0f2fe; color: #0369a1; }
+  .badge-post { background: #dcfce7; color: #15803d; }
+  .badge-put { background: #fef3c7; color: #b45309; }
+  .badge-delete { background: #fee2e2; color: #b91c1c; }
+
+  .table-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    margin: 16px 0 22px 0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    page-break-inside: avoid;
+  }
+  .table-card-header {
+    background: #f1f8f3;
+    border-bottom: 1.5px solid #c6e1cf;
+    padding: 10px 14px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-card-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f3e21;
+    margin: 0;
+  }
+  .table-card-body {
+    padding: 12px 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-badge">Complete Engineering &amp; DBMS Manual</div>
+  <h1>Agriculture Management System</h1>
+  <div class="cover-sub">
+    A Technical Reference Guide Explaining the Full-Stack Connection Between Frontend &amp; MySQL Database via Flask, with Exhaustive Table-by-Table SQL Query Analyses
+  </div>
+
+  <div class="cover-meta-grid">
+    <div class="cover-meta-item">
+      <strong>System Name</strong>
+      <span>Agriculture Management Portal (AgricultureDB)</span>
+    </div>
+    <div class="cover-meta-item">
+      <strong>Database Engine</strong>
+      <span>MySQL 8.0 (InnoDB Engine, 19 Tables + Views)</span>
+    </div>
+    <div class="cover-meta-item">
+      <strong>Application Tier</strong>
+      <span>Python 3.11+ / Flask WSGI Micro-Gateway</span>
+    </div>
+    <div class="cover-meta-item">
+      <strong>Frontend Client Tier</strong>
+      <span>Vanilla ES6+ JavaScript, Fetch API, HTML5/CSS3</span>
+    </div>
+    <div class="cover-meta-item">
+      <strong>Security Architecture</strong>
+      <span>Stateless JWT (HMAC-SHA256), PBKDF2 Password Hashing</span>
+    </div>
+    <div class="cover-meta-item">
+      <strong>Query Execution</strong>
+      <span>Parameterized SQL (Zero Concatenation / Full Injection Defense)</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 50px; font-size: 9pt; color: #718096;">
+    Prepared for Architectural Review, Technical Defense, and DBMS Academic Evaluation<br>
+    Version 2.0 (Flask Implementation) &bull; October 2026
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<h1>1. Executive Architecture: The 3-Tier Model</h1>
+<p>
+  The Agriculture Management System is structured according to the industry-standard <strong>3-Tier Software Architecture</strong>. This model strictly separates presentation logic, business and application mediation, and persistent data storage into decoupled, maintainable layers.
+</p>
+
+<div class="diagram-box">
++---------------------------------------------------------------------------------------------------+
+|                                      TIER 1: FRONTEND PRESENTATION                                |
+|  - HTML5 UI (farmer_dashboard.html, officer_dashboard.html, login/registration portals)           |
+|  - Vanilla ES6 JavaScript (app.js) orchestrates DOM manipulation, state, and form submissions      |
+|  - Browser Fetch API transmits asynchronous HTTP REST payloads with Bearer JWT Authorization      |
++---------------------------------------------------------------------------------------------------+
+                                                  |
+                         JSON over HTTP / REST (Ports 80/443/8000)
+                                                  v
++---------------------------------------------------------------------------------------------------+
+|                                  TIER 2: FLASK APPLICATION &amp; ROUTING                              |
+|  - Flask Micro-Gateway (app = Flask(__name__)) with wildcard dispatcher (@app.route("/&lt;path&gt;"))   |
+|  - Stateless Token Verification (HMAC-SHA256) verifying user identity &amp; role permissions          |
+|  - Strict Input Sanitization, type validation &amp; error handling (APIError -&gt; HTTP Status Codes)    |
+|  - Connection Manager (database_connection()) orchestrating MySQL socket lifecycle &amp; transactions |
++---------------------------------------------------------------------------------------------------+
+                                                  |
+                    Parameterized SQL over TCP Socket (MySQL Port 3306)
+                                                  v
++---------------------------------------------------------------------------------------------------+
+|                                    TIER 3: MYSQL RELATIONAL DATABASE                              |
+|  - Database: AgricultureDB on MySQL 8.0 with InnoDB Storage Engine (ACID Compliant)              |
+|  - 19 Normalized Relational Tables + Materialized Directory View (Officer_Farmer_Directory)        |
+|  - Declarative Foreign Keys (ON DELETE CASCADE, RESTRICT, SET NULL) ensuring Referential Integrity|
+|  - Stored Generated Columns (total_income = quantity_sold * price_per_unit)                       |
++---------------------------------------------------------------------------------------------------+
+</div>
+
+<h2>Why Frontend JavaScript Cannot Connect Directly to MySQL</h2>
+<p>
+  A frequent question in architectural evaluations is: <em>"Why does JavaScript need Flask? Why not connect directly from the browser to MySQL?"</em>
+</p>
+<ul>
+  <li><strong>Security Sandbox &amp; Credential Exposure:</strong> Web browsers operate in an isolated sandbox. If JavaScript connected directly to MySQL, the database host, username, and password would be visible in client-side dev tools to anyone inspecting the source code.</li>
+  <li><strong>Network Protocol Incompatibility:</strong> Web browsers communicate over HTTP/HTTPS/WebSocket protocols. MySQL uses a proprietary binary TCP protocol (Port 3306) that client-side browser JavaScript cannot speak natively.</li>
+  <li><strong>Privilege Escalation &amp; Business Logic:</strong> A browser client cannot be trusted. If clients could issue direct SQL statements, a malicious user could alter <code>WHERE farmer_id = 1</code> to <code>WHERE 1=1</code> and delete all farm records. The Flask application tier validates access control (RBAC), ownership rules, and data integrity before any SQL touches the database.</li>
+</ul>
+
+<!-- SECTION 2 -->
+<h1>2. The Frontend-to-Database Connection via Flask</h1>
+<p>
+  Flask acts as the secure, high-speed mediator between frontend browser events and persistent MySQL database tables. Below is the precise technical mechanism of how Flask bridges the two sides.
+</p>
+
+<h2>2.1 The Flask Gateway Implementation</h2>
+<p>
+  In <code>backend/app.py</code>, Flask is configured as a non-invasive gateway. It wraps incoming HTTP requests, passes the WSGI <code>request.environ</code> to our core route handler, and converts WSGI byte streams into high-performance Flask <code>Response</code> objects:
+</p>
+
+<pre><code class="language-python"># Flask application instance (backend/app.py)
+app = Flask(__name__, static_folder=None)
+
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+@app.route("/&lt;path:path&gt;", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+def flask_gateway(path: str) -&gt; Any:
+    """Dispatches incoming Flask requests seamlessly through our application endpoints."""
+    environ = request.environ
+    response_status = "200 OK"
+    response_headers = []
+
+    def start_response(status: str, headers: list[tuple[str, str]], exc_info: Any = None):
+        nonlocal response_status, response_headers
+        response_status = status
+        response_headers = headers
+
+    # Execute business logic and SQL through WSGI application dispatcher
+    body_chunks = application(environ, start_response)
+    status_code = int(response_status.split()[0])
+    response_body = b"".join(body_chunks)
+
+    resp = Response(response_body, status=status_code)
+    for key, val in response_headers:
+        resp.headers[key] = val
+    return resp
+</code></pre>
+
+<div class="callout callout-blue">
+  <div class="callout-title">Architectural Benefit of the Flask Gateway</div>
+  By wrapping our battle-tested application in Flask's Werkzeug development server locally, the portal gains <strong>multi-threaded concurrent request handling</strong>. When the browser requests the dashboard HTML, CSS, JavaScript, and background profile APIs simultaneously, Flask handles them across parallel worker threads without socket blocking.
+</div>
+
+<h2>2.2 Client-Side Communication: Fetch API with JWT Bearer Authentication</h2>
+<p>
+  In <code>frontend/app.js</code>, all outbound API requests pass through a centralized helper function: <code>fetchWithAuth(path, options)</code>. This ensures that every HTTP request carries the user's security token and appropriate content headers:
+</p>
+
+<pre><code class="language-javascript">// Centralized authenticated API dispatcher (frontend/app.js)
+async function fetchWithAuth(path, options = {}) {
+  const token = localStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers
+  });
+
+  if (response.status === 401) {
+    // Token expired or invalid: purge storage and redirect to login
+    localStorage.clear();
+    window.location.href = "index.html";
+    return null;
+  }
+  return response.json();
+}
+</code></pre>
+
+<h2>2.3 Database Connection Management &amp; Context Managers</h2>
+<p>
+  To prevent connection leaks, connection starvation, and abandoned transactions, Flask interacts with MySQL via Python's <code>contextlib.contextmanager</code>. This guarantees that every MySQL socket is cleanly returned or closed, even if an unhandled error occurs:
+</p>
+
+<pre><code class="language-python">@contextmanager
+def database_connection() -&gt; Iterator[MySQLConnection]:
+    """Context manager delivering safe, transactional database connections."""
+    config = get_database_config()
+    try:
+        connection = mysql.connector.connect(**config)
+    except mysql.connector.Error as error:
+        raise APIError(503, "Database unavailable. Check the MySQL service and backend/.env.")
+    try:
+        yield connection
+    finally:
+        if connection.is_connected():
+            connection.close()
+</code></pre>
+
+<h2>2.4 Security: Absolute Prevention of SQL Injection</h2>
+<p>
+  Our Flask implementation enforces <strong>Parameterized Queries</strong> across all 19 database tables. User inputs are never concatenated directly into SQL strings.
+</p>
+
+<div class="callout callout-amber">
+  <div class="callout-title">Why Parameterized Queries Prevent SQL Injection</div>
+  <strong>Vulnerable Pattern (Concatenation):</strong><br>
+  <code>cursor.execute("SELECT * FROM Users WHERE email = '" + email + "'")</code><br>
+  <em>If the attacker inputs <code>admin' OR '1'='1</code>, the SQL query structure is altered and bypassed.</em><br><br>
+  <strong>Secure Parameterized Pattern (Used in our project):</strong><br>
+  <code>cursor.execute("SELECT * FROM Users WHERE email = %s", (email,))</code><br>
+  <em>The database treats <code>%s</code> strictly as a literal scalar value. Even if the user submits malicious SQL commands, quotes, or semicolons, MySQL never evaluates them as SQL instructions.</em>
+</div>
+
+<!-- SECTION 3 -->
+<h1>3. Step-by-Step Life of a Request: Frontend to DB</h1>
+<p>
+  To understand the end-to-end integration, let us trace a real-world user action: <strong>A farmer records a newly planted crop cycle</strong> (e.g., 5.5 acres of Rice on Farm #12).
+</p>
+
+<table style="margin-top: 15px;">
+  <thead>
+    <tr>
+      <th style="width: 15%;">Step &amp; Layer</th>
+      <th style="width: 35%;">Action Taken</th>
+      <th style="width: 50%;">Code &amp; Data Flow</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Step 1</strong><br>Frontend UI</td>
+      <td>Farmer enters crop details on <code>farmer_dashboard.html</code> and clicks <em>"Plant Crop"</em>.</td>
+      <td>
+        Form values captured by JavaScript:<br>
+        <code>farm_id: 12</code>, <code>crop_id: 1</code> (Rice), <code>season: "Kharif"</code>, <code>planting_date: "2026-10-15"</code>, <code>area: 5.5</code>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 2</strong><br>Network / HTTP</td>
+      <td><code>app.js</code> serializes data to JSON and transmits an HTTP POST request.</td>
+      <td>
+        <code>POST /api/farmer/crops</code><br>
+        <code>Authorization: Bearer eyJhbGciOi...</code><br>
+        <code>Content-Type: application/json</code><br>
+        Body: <code>{"farm_id":12,"crop_id":1,"season":"Kharif",...}</code>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 3</strong><br>Flask Routing</td>
+      <td>Flask's <code>flask_gateway</code> intercepts the HTTP request and delivers it to <code>application()</code>.</td>
+      <td>
+        Matches route: <code>path == "/api/farmer/crops"</code> and <code>method == "POST"</code>.<br>
+        Dispatches to handler: <code>handle_plant_crop(payload, user)</code>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 4</strong><br>Auth &amp; Security</td>
+      <td>Flask verifies the JWT token and extracts authenticated farmer identity.</td>
+      <td>
+        Decodes HMAC-SHA256 signature.<br>
+        Validates expiration and extracts <code>user["user_id"] = 1</code>.<br>
+        Queries <code>Farmers</code> table to resolve <code>farmer_id = 4</code>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 5</strong><br>Ownership Guard</td>
+      <td>Flask verifies that Farm #12 belongs to this authenticated farmer before allowing the plant.</td>
+      <td>
+        Executes SQL check:<br>
+        <code>SELECT farm_id FROM Farms WHERE farm_id = 12 AND farmer_id = 4</code>.<br>
+        If no row returned &rarr; raises <code>APIError(403, "Selected farm does not belong to you.")</code>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 6</strong><br>Database Write</td>
+      <td>Flask opens a transaction and executes the parameterized SQL INSERT.</td>
+      <td>
+        <code>INSERT INTO Farm_Crops (farm_id, crop_id, season, planting_date, cultivated_area_acres, status) VALUES (%s, %s, %s, %s, %s, %s)</code><br>
+        <code>connection.commit()</code> commits data permanently to MySQL.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Step 7</strong><br>Response &amp; UI</td>
+      <td>Flask formats a 201 Created JSON response; Frontend updates UI without reloading.</td>
+      <td>
+        Flask returns: <code>{"message": "Crop planted successfully.", "farm_crop_id": 28}</code>.<br>
+        Frontend displays success toast, refreshes crop table, and recalculates financial summaries.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 4 -->
+<div style="page-break-before: always;"></div>
+<h1>4. Table-Wise SQL Query Manual (All 19 Tables + Views)</h1>
+<p>
+  Below is the complete, table-by-table reference for all 19 entities and views in <code>AgricultureDB</code>. Each entry details the schema purpose, foreign key constraints, associated Flask API endpoints, the exact SQL queries executed, and an in-depth breakdown of how Flask and MySQL process each statement.
+</p>
+
+<!-- TABLE 1 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">1. Users (Authentication &amp; Identity Directory)</span>
+    <span class="badge badge-post">POST /api/auth/register</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Serves as the central security and authentication anchor. Stores login credentials, password hashes, role assignments (<code>FARMER</code> vs <code>OFFICER</code>), and profile completion flags.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('FARMER', 'OFFICER') NOT NULL,
+    full_name VARCHAR(100) NULL,
+    phone VARCHAR(15) NULL,
+    is_profile_complete BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+    <h4>A. User Registration (Flask Handler: <code>handle_register</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Users (email, password_hash, role, full_name, phone, is_profile_complete)
+VALUES (%s, %s, %s, %s, %s, FALSE);</code></pre>
+    <p><em>Query Breakdown:</em> Flask hashes the raw password using PBKDF2-HMAC-SHA256 with a unique 16-byte cryptographic salt. The resulting composite string (<code>algorithm$iterations$salt$hash</code>) is safely inserted. <code>is_profile_complete</code> is explicitly set to <code>FALSE</code> to force profile completion before portal features are accessed.</p>
+
+    <h4>B. User Login &amp; Verification (Flask Handler: <code>handle_login</code>)</h4>
+    <pre><code class="language-sql">SELECT user_id, email, password_hash, role, full_name, phone, is_profile_complete
+FROM Users
+WHERE email = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Flask looks up the user by email using the <code>%s</code> parameter. If found, Flask extracts the salt and iterations from <code>password_hash</code>, re-computes the hash of the entered password, and uses <code>hmac.compare_digest</code> (constant-time comparison) to prevent timing attacks. If verified, a signed JWT token is issued.</p>
+
+    <h4>C. Profile Information Update (Flask Handler: <code>handle_update_profile</code>)</h4>
+    <pre><code class="language-sql">UPDATE Users
+SET full_name = %s, phone = %s
+WHERE user_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Updates user contact details while maintaining identity integrity. <code>user_id</code> is extracted from the cryptographically verified JWT token, preventing users from altering other accounts.</p>
+  </div>
+</div>
+
+<!-- TABLE 2 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">2. Agriculture_Offices (Krishi Bhavans)</span>
+    <span class="badge badge-get">GET /api/offices</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Represents governmental agricultural administrative centers (Krishi Bhavans) that oversee specific districts and Gram Panchayaths.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Agriculture_Offices (
+    office_id INT AUTO_INCREMENT PRIMARY KEY,
+    office_name VARCHAR(150) NOT NULL,
+    phone VARCHAR(15),
+    email VARCHAR(150),
+    address VARCHAR(255)
+);</code></pre>
+
+    <h4>A. Fetch All Offices for Registration &amp; Lookups (Flask Handler: <code>get_lookup_data</code>)</h4>
+    <pre><code class="language-sql">SELECT office_id, office_name, phone, email, address
+FROM Agriculture_Offices
+ORDER BY office_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Executed during officer onboarding and jurisdictional filtering. Returns the complete roster of Krishi Bhavans sorted alphabetically for frontend dropdown selectors.</p>
+  </div>
+</div>
+
+<!-- TABLE 3 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">3. Panchayaths (Gram Panchayaths)</span>
+    <span class="badge badge-get">GET /api/panchayaths</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Models the local self-government territories (Gram Panchayaths). Each Panchayath is administratively linked to an Agriculture Office via a foreign key.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Panchayaths (
+    panchayath_id INT AUTO_INCREMENT PRIMARY KEY,
+    panchayath_name VARCHAR(150) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    office_id INT NOT NULL,
+    FOREIGN KEY (office_id) REFERENCES Agriculture_Offices(office_id) ON DELETE RESTRICT
+);</code></pre>
+
+    <h4>A. Fetch Panchayaths with Associated Office Details (Flask Handler: <code>get_lookup_data</code>)</h4>
+    <pre><code class="language-sql">SELECT panchayath_id, panchayath_name, district, office_id
+FROM Panchayaths
+ORDER BY panchayath_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Populates dynamic selection lists on farmer registration. The <code>ON DELETE RESTRICT</code> foreign key constraint prevents accidental deletion of an office if Panchayaths depend on it.</p>
+  </div>
+</div>
+
+<!-- TABLE 4 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">4. Officers (Agricultural Officers Directory)</span>
+    <span class="badge badge-post">POST /api/users/complete-profile</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Extension table for <code>Users</code> with role <code>OFFICER</code>. Maps officers to their assigned Krishi Bhavan and optional Gram Panchayath jurisdiction.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Officers (
+    officer_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    office_id INT NOT NULL,
+    panchayath_id INT NULL,
+    designation VARCHAR(100) DEFAULT 'Agricultural Officer',
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (office_id) REFERENCES Agriculture_Offices(office_id) ON DELETE RESTRICT,
+    FOREIGN KEY (panchayath_id) REFERENCES Panchayaths(panchayath_id) ON DELETE SET NULL
+);</code></pre>
+
+    <h4>A. Complete Officer Profile (Flask Handler: <code>handle_complete_profile</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Officers (user_id, office_id, panchayath_id, designation)
+VALUES (%s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Links the newly registered user account to a designated office and jurisdiction. <code>ON DELETE CASCADE</code> ensures that removing a user automatically purges their officer record.</p>
+
+    <h4>B. Resolve Officer Identity &amp; Assigned Jurisdiction</h4>
+    <pre><code class="language-sql">SELECT o.officer_id, o.office_id, o.panchayath_id, o.designation,
+       ao.office_name, p.panchayath_name
+FROM Officers o
+JOIN Agriculture_Offices ao ON ao.office_id = o.office_id
+LEFT JOIN Panchayaths p ON p.panchayath_id = o.panchayath_id
+WHERE o.user_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Executed on every officer request to determine the officer's administrative boundary. <code>LEFT JOIN</code> allows officers assigned at the Krishi Bhavan level (supervising all panchayaths) to have a <code>NULL</code> <code>panchayath_id</code>.</p>
+  </div>
+</div>
+
+<!-- TABLE 5 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">5. Farmers (Registered Farm Operators)</span>
+    <span class="badge badge-post">POST /api/users/complete-profile</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Extension table for <code>Users</code> with role <code>FARMER</code>. Associates the farmer with their home Gram Panchayath and residential address.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farmers (
+    farmer_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    panchayath_id INT NOT NULL,
+    address VARCHAR(255),
+    registration_date DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (panchayath_id) REFERENCES Panchayaths(panchayath_id) ON DELETE RESTRICT
+);</code></pre>
+
+    <h4>A. Create Farmer Profile Record</h4>
+    <pre><code class="language-sql">INSERT INTO Farmers (user_id, panchayath_id, address, registration_date)
+VALUES (%s, %s, %s, CURRENT_DATE);</code></pre>
+    <p><em>Query Breakdown:</em> Inserts the core agricultural operator profile. <code>CURRENT_DATE</code> automatically establishes the official registration timestamp.</p>
+
+    <h4>B. Fetch Farmer Details with Jurisdictional Hierarchy</h4>
+    <pre><code class="language-sql">SELECT f.farmer_id, f.panchayath_id, f.address, f.registration_date,
+       p.panchayath_name, p.district, ao.office_id, ao.office_name
+FROM Farmers f
+JOIN Panchayaths p ON p.panchayath_id = f.panchayath_id
+JOIN Agriculture_Offices ao ON ao.office_id = p.office_id
+WHERE f.user_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Multi-table <code>JOIN</code> traversing <code>Farmers &rarr; Panchayaths &rarr; Agriculture_Offices</code>. Resolves the farmer's local Gram Panchayath and supervising Krishi Bhavan in a single round-trip.</p>
+  </div>
+</div>
+
+<!-- TABLE 6 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">6. Farms (Land Holdings &amp; Plots)</span>
+    <span class="badge badge-post">POST /api/farmer/farms</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Stores individual agricultural plots owned or operated by a farmer, including acreage, location, soil characteristics, and irrigation infrastructure.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farms (
+    farm_id INT AUTO_INCREMENT PRIMARY KEY,
+    farmer_id INT NOT NULL,
+    farm_name VARCHAR(100),
+    location VARCHAR(255) NOT NULL,
+    area_acres DECIMAL(10,2) NOT NULL,
+    soil_type VARCHAR(50),
+    irrigation_type VARCHAR(50),
+    FOREIGN KEY (farmer_id) REFERENCES Farmers(farmer_id) ON DELETE CASCADE,
+    CHECK (area_acres &gt; 0)
+);</code></pre>
+
+    <h4>A. Insert Farm Plot (Flask Handler: <code>handle_add_farm</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Farms (farmer_id, farm_name, location, area_acres, soil_type, irrigation_type)
+VALUES (%s, %s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Adds a new parcel of agricultural land. The database enforces <code>CHECK (area_acres &gt; 0)</code> to mathematically disallow zero or negative land holdings.</p>
+
+    <h4>B. Update Farm Details (Flask Handler: <code>handle_edit_farm</code>)</h4>
+    <pre><code class="language-sql">UPDATE Farms
+SET farm_name = %s, location = %s, area_acres = %s, soil_type = %s, irrigation_type = %s
+WHERE farm_id = %s AND farmer_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Modifies plot specifications. The compounding condition <code>WHERE farm_id = %s AND farmer_id = %s</code> enforces tenant isolation, preventing Farmer A from editing Farmer B's plot.</p>
+
+    <h4>C. Retrieve Farmer's Land Parcels</h4>
+    <pre><code class="language-sql">SELECT farm_id, farm_name, location, area_acres, soil_type, irrigation_type
+FROM Farms
+WHERE farmer_id = %s
+ORDER BY farm_name, farm_id;</code></pre>
+    <p><em>Query Breakdown:</em> Populates the farmer's asset dashboard and farm selection dropdowns across crop planting and expense tracking modals.</p>
+  </div>
+</div>
+
+<!-- TABLE 7 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">7. Crops (Master Crop Catalog)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Canonical reference catalog defining standardized crop types, typical cultivation duration, agricultural seasons, and benchmark yields.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Crops (
+    crop_id INT AUTO_INCREMENT PRIMARY KEY,
+    crop_name VARCHAR(100) NOT NULL UNIQUE,
+    crop_category VARCHAR(50),
+    season VARCHAR(50),
+    growth_duration_days INT,
+    expected_yield_per_acre DECIMAL(10,2),
+    CHECK (growth_duration_days IS NULL OR growth_duration_days &gt; 0),
+    CHECK (expected_yield_per_acre IS NULL OR expected_yield_per_acre &gt;= 0)
+);</code></pre>
+
+    <h4>A. Fetch Master Crops List (Flask Handler: <code>get_reference_data</code>)</h4>
+    <pre><code class="language-sql">SELECT crop_id, crop_name, crop_category, season, growth_duration_days, expected_yield_per_acre
+FROM Crops
+ORDER BY crop_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Loaded by the frontend on dashboard initialization. Enables client-side auto-fill of expected harvest dates and yield calculations based on selected planting date.</p>
+  </div>
+</div>
+
+<!-- TABLE 8 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">8. Farm_Crops (Active &amp; Historical Cultivation Cycles)</span>
+    <span class="badge badge-post">POST /api/farmer/crops</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Represents a specific seasonal planting cycle on a farm plot. Bridges <code>Farms</code> and <code>Crops</code> and acts as the central cost-accounting center for labor, fertilizer, and income.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farm_Crops (
+    farm_crop_id INT AUTO_INCREMENT PRIMARY KEY,
+    farm_id INT NOT NULL,
+    crop_id INT NOT NULL,
+    season VARCHAR(50),
+    planting_date DATE,
+    expected_harvest_date DATE,
+    actual_harvest_date DATE,
+    cultivated_area_acres DECIMAL(10,2) NOT NULL,
+    status ENUM('PLANNED', 'GROWING', 'HARVESTED', 'FAILED') DEFAULT 'PLANNED',
+    FOREIGN KEY (farm_id) REFERENCES Farms(farm_id) ON DELETE CASCADE,
+    FOREIGN KEY (crop_id) REFERENCES Crops(crop_id) ON DELETE RESTRICT,
+    CHECK (cultivated_area_acres &gt; 0)
+);</code></pre>
+
+    <h4>A. Plant a Crop Cycle (Flask Handler: <code>handle_plant_crop</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Farm_Crops (farm_id, crop_id, season, planting_date, expected_harvest_date, cultivated_area_acres, status)
+VALUES (%s, %s, %s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Initiates a crop cycle in <code>GROWING</code> or <code>PLANNED</code> state. <code>cultivated_area_acres</code> is validated to be positive and physically less than or equal to total farm acreage.</p>
+
+    <h4>B. Edit / Update Crop Cycle Status (Flask Handler: <code>handle_edit_crop</code>)</h4>
+    <pre><code class="language-sql">UPDATE Farm_Crops
+SET farm_id = %s, crop_id = %s, season = %s, planting_date = %s,
+    expected_harvest_date = %s, actual_harvest_date = %s,
+    cultivated_area_acres = %s, status = %s
+WHERE farm_crop_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Allows status progression from <code>GROWING &rarr; HARVESTED</code> or <code>FAILED</code>, recording actual harvest dates for agronomic performance analysis.</p>
+
+    <h4>C. Comprehensive Crop Overview with Multi-Table Joins</h4>
+    <pre><code class="language-sql">SELECT fc.farm_crop_id, fc.farm_id, f.farm_name, fc.crop_id, c.crop_name,
+       c.crop_category, fc.season, fc.planting_date, fc.expected_harvest_date,
+       fc.actual_harvest_date, fc.cultivated_area_acres, fc.status
+FROM Farm_Crops AS fc
+JOIN Farms AS f ON f.farm_id = fc.farm_id
+JOIN Crops AS c ON c.crop_id = fc.crop_id
+WHERE f.farmer_id = %s
+ORDER BY fc.planting_date DESC, fc.farm_crop_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Joins <code>Farm_Crops</code> with parent <code>Farms</code> and master <code>Crops</code>. Filters strictly by <code>f.farmer_id</code> to provide the farmer's complete agricultural activity log.</p>
+  </div>
+</div>
+
+<!-- TABLE 9 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">9. Labour_Types (Agricultural Work Classifications)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Master reference table categorizing manual and mechanized agricultural tasks (e.g., Tilling, Sowing, Weeding, Harvesting) and standard daily wage rates.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Labour_Types (
+    labour_id INT AUTO_INCREMENT PRIMARY KEY,
+    labour_name VARCHAR(100) NOT NULL UNIQUE,
+    standard_daily_rate DECIMAL(10,2)
+);</code></pre>
+
+    <h4>A. Fetch Standard Labor Rates</h4>
+    <pre><code class="language-sql">SELECT labour_id, labour_name, standard_daily_rate
+FROM Labour_Types
+ORDER BY labour_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Feeds frontend wage calculators so farmers can estimate labor outlays based on work days and worker headcount.</p>
+  </div>
+</div>
+
+<!-- TABLE 10 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">10. Fertilizers (Nutrient &amp; Soil Amendments)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Master reference catalog of organic manures and chemical fertilizers (e.g., Urea, DAP, Potash, Compost) and standard measurement units.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Fertilizers (
+    fertilizer_id INT AUTO_INCREMENT PRIMARY KEY,
+    fertilizer_name VARCHAR(120) NOT NULL UNIQUE,
+    fertilizer_type VARCHAR(50),
+    unit VARCHAR(20) DEFAULT 'kg'
+);</code></pre>
+
+    <h4>A. Fetch Master Fertilizers List</h4>
+    <pre><code class="language-sql">SELECT fertilizer_id, fertilizer_name, fertilizer_type, unit
+FROM Fertilizers
+ORDER BY fertilizer_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Populates fertilizer selection pickers on the farmer dashboard with pre-configured units (kg, liters, bags).</p>
+  </div>
+</div>
+
+<!-- TABLE 11 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">11. Rental_Types (Machinery &amp; Tool Rentals)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Standardized classifications for hired farm equipment (e.g., Tractor, Harvester, Power Tiller, Drip Irrigation Kits).</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Rental_Types (
+    rental_id INT AUTO_INCREMENT PRIMARY KEY,
+    rental_name VARCHAR(120) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);</code></pre>
+
+    <h4>A. Fetch Machinery Rental Categories</h4>
+    <pre><code class="language-sql">SELECT rental_id, rental_name, description
+FROM Rental_Types
+ORDER BY rental_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Categorizes rental equipment expenses under the <code>Expenses</code> entity.</p>
+  </div>
+</div>
+
+<!-- TABLE 12 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">12. Energy_Types (Power &amp; Fuel Utilities)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Standardized classifications for agricultural power sources (e.g., Grid Electricity, Diesel Fuel, Solar Pump Power).</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Energy_Types (
+    energy_id INT AUTO_INCREMENT PRIMARY KEY,
+    energy_name VARCHAR(100) NOT NULL UNIQUE
+);</code></pre>
+
+    <h4>A. Fetch Energy Source Categories</h4>
+    <pre><code class="language-sql">SELECT energy_id, energy_name
+FROM Energy_Types
+ORDER BY energy_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Categorizes power and fuel expenditures under the <code>Expenses</code> entity.</p>
+  </div>
+</div>
+
+<!-- TABLE 13 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">13. Expenses (Operational Expenditures)</span>
+    <span class="badge badge-post">POST /api/farmer/expenses</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Granular ledger recording general farm expenses across Seeds, Rental, Energy, Irrigation, Transport, and Miscellaneous outlays.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Expenses (
+    expense_id INT AUTO_INCREMENT PRIMARY KEY,
+    farm_id INT NOT NULL,
+    farm_crop_id INT NULL,
+    expense_category ENUM('SEEDS', 'RENTAL', 'ENERGY', 'IRRIGATION', 'TRANSPORT', 'OTHER') NOT NULL,
+    rental_id INT NULL,
+    energy_id INT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    expense_date DATE NOT NULL,
+    description VARCHAR(255),
+    FOREIGN KEY (farm_id) REFERENCES Farms(farm_id) ON DELETE CASCADE,
+    FOREIGN KEY (farm_crop_id) REFERENCES Farm_Crops(farm_crop_id) ON DELETE SET NULL,
+    FOREIGN KEY (rental_id) REFERENCES Rental_Types(rental_id) ON DELETE SET NULL,
+    FOREIGN KEY (energy_id) REFERENCES Energy_Types(energy_id) ON DELETE SET NULL
+);</code></pre>
+
+    <h4>A. Record Operational Expense (Flask Handler: <code>handle_add_expense</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Expenses (farm_id, farm_crop_id, expense_category, rental_id, energy_id, amount, expense_date, description)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Adds an expense entry linked optionally to a specific crop cycle (<code>farm_crop_id</code>) or directly to the overarching farm (<code>farm_id</code>). <code>ON DELETE SET NULL</code> ensures financial audit logs are preserved even if a rental type is decommissioned.</p>
+
+    <h4>B. Detailed Expense Report with Left Outer Joins</h4>
+    <pre><code class="language-sql">SELECT e.expense_id, e.farm_id, f.farm_name, e.farm_crop_id, c.crop_name,
+       e.expense_category, e.rental_id, rt.rental_name, e.energy_id, et.energy_name,
+       e.amount, e.expense_date, e.description
+FROM Expenses AS e
+JOIN Farms AS f ON f.farm_id = e.farm_id
+LEFT JOIN Farm_Crops AS fc ON fc.farm_crop_id = e.farm_crop_id
+LEFT JOIN Crops AS c ON c.crop_id = fc.crop_id
+LEFT JOIN Rental_Types AS rt ON rt.rental_id = e.rental_id
+LEFT JOIN Energy_Types AS et ON et.energy_id = e.energy_id
+WHERE f.farmer_id = %s
+ORDER BY e.expense_date DESC, e.expense_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Utilizes four <code>LEFT JOIN</code> clauses so that general expenses without a linked crop cycle, rental equipment, or energy source still appear accurately with <code>NULL</code> values cleanly converted to empty strings in JSON.</p>
+  </div>
+</div>
+
+<!-- TABLE 14 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">14. Farm_Crop_Labour (Labor Work Logs)</span>
+    <span class="badge badge-post">POST /api/farmer/labour</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Tracks field worker deployment, days worked, and financial compensation for specific crop cultivation cycles.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farm_Crop_Labour (
+    labour_usage_id INT AUTO_INCREMENT PRIMARY KEY,
+    farm_crop_id INT NOT NULL,
+    labour_id INT NOT NULL,
+    work_date DATE NOT NULL,
+    worker_count INT NOT NULL DEFAULT 1,
+    days_worked DECIMAL(6,2) NOT NULL DEFAULT 1,
+    total_cost DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (farm_crop_id) REFERENCES Farm_Crops(farm_crop_id) ON DELETE CASCADE,
+    FOREIGN KEY (labour_id) REFERENCES Labour_Types(labour_id) ON DELETE RESTRICT
+);</code></pre>
+
+    <h4>A. Insert Labor Deployment Log (Flask Handler: <code>handle_add_labour</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Farm_Crop_Labour (farm_crop_id, labour_id, work_date, worker_count, days_worked, total_cost)
+VALUES (%s, %s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Persists wage costs. Flask validates that <code>total_cost = worker_count * days_worked * daily_rate</code> or records actual agreed payments.</p>
+
+    <h4>B. Fetch Labor Cost Breakdown for Farmer</h4>
+    <pre><code class="language-sql">SELECT fcl.labour_usage_id, fcl.farm_crop_id, f.farm_name, c.crop_name,
+       fcl.labour_id, lt.labour_name, fcl.work_date, fcl.worker_count,
+       fcl.days_worked, fcl.total_cost
+FROM Farm_Crop_Labour AS fcl
+JOIN Farm_Crops AS fc ON fc.farm_crop_id = fcl.farm_crop_id
+JOIN Farms AS f ON f.farm_id = fc.farm_id
+JOIN Crops AS c ON c.crop_id = fc.crop_id
+JOIN Labour_Types AS lt ON lt.labour_id = fcl.labour_id
+WHERE f.farmer_id = %s
+ORDER BY fcl.work_date DESC, fcl.labour_usage_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Multi-table join displaying labor utilization per crop cycle, feeding directly into total farm operational expenditure calculations.</p>
+  </div>
+</div>
+
+<!-- TABLE 15 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">15. Farm_Crop_Fertilizer (Nutrient Application Logs)</span>
+    <span class="badge badge-post">POST /api/farmer/fertilizers</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Records physical application of organic and chemical fertilizers to crops, tracking dosages and associated costs.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farm_Crop_Fertilizer (
+    application_id INT AUTO_INCREMENT PRIMARY KEY,
+    farm_crop_id INT NOT NULL,
+    fertilizer_id INT NOT NULL,
+    application_date DATE NOT NULL,
+    quantity DECIMAL(12,2) NOT NULL,
+    total_cost DECIMAL(12,2) NOT NULL DEFAULT 0,
+    FOREIGN KEY (farm_crop_id) REFERENCES Farm_Crops(farm_crop_id) ON DELETE CASCADE,
+    FOREIGN KEY (fertilizer_id) REFERENCES Fertilizers(fertilizer_id) ON DELETE RESTRICT
+);</code></pre>
+
+    <h4>A. Log Fertilizer Application (Flask Handler: <code>handle_add_fertilizer</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Farm_Crop_Fertilizer (farm_crop_id, fertilizer_id, application_date, quantity, total_cost)
+VALUES (%s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Captures input dosages and expenditure. <code>ON DELETE RESTRICT</code> on <code>fertilizer_id</code> preserves audit records even if catalog definitions are modified.</p>
+
+    <h4>B. Retrieve Fertilizer Application History</h4>
+    <pre><code class="language-sql">SELECT fcf.application_id, fcf.farm_crop_id, f.farm_name, c.crop_name,
+       fcf.fertilizer_id, fert.fertilizer_name, fert.fertilizer_type, fert.unit,
+       fcf.application_date, fcf.quantity, fcf.total_cost
+FROM Farm_Crop_Fertilizer AS fcf
+JOIN Farm_Crops AS fc ON fc.farm_crop_id = fcf.farm_crop_id
+JOIN Farms AS f ON f.farm_id = fc.farm_id
+JOIN Crops AS c ON c.crop_id = fc.crop_id
+JOIN Fertilizers AS fert ON fert.fertilizer_id = fcf.fertilizer_id
+WHERE f.farmer_id = %s
+ORDER BY fcf.application_date DESC, fcf.application_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Resolves fertilizer specifications (commercial name, chemical/organic type, unit) alongside the crop name and farm plot.</p>
+  </div>
+</div>
+
+<!-- TABLE 16 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">16. Income (Harvest Sales &amp; Revenues)</span>
+    <span class="badge badge-post">POST /api/farmer/income</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Financial revenue ledger tracking crop yields sold to commercial buyers or government mandis. Features an automated stored generated column for total income.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Income (
+    income_id INT AUTO_INCREMENT PRIMARY KEY,
+    farm_crop_id INT NOT NULL,
+    sale_date DATE NOT NULL,
+    quantity_sold DECIMAL(12,2) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'kg',
+    price_per_unit DECIMAL(12,2) NOT NULL,
+    total_income DECIMAL(14,2) GENERATED ALWAYS AS (quantity_sold * price_per_unit) STORED,
+    buyer_name VARCHAR(150),
+    FOREIGN KEY (farm_crop_id) REFERENCES Farm_Crops(farm_crop_id) ON DELETE CASCADE
+);</code></pre>
+
+    <h4>A. Record Harvest Sale (Flask Handler: <code>handle_add_income</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Income (farm_crop_id, sale_date, quantity_sold, unit, price_per_unit, buyer_name)
+VALUES (%s, %s, %s, %s, %s, %s);</code></pre>
+    <p><em>Query Breakdown:</em> Notice that <code>total_income</code> is <strong>omitted</strong> from the <code>INSERT</code> statement! MySQL automatically evaluates <code>quantity_sold * price_per_unit</code> and writes the calculated value directly to the storage block as a <code>STORED</code> column. This eliminates floating point rounding discrepancies between Python and MySQL.</p>
+
+    <h4>B. Fetch Revenue Ledger for Farmer</h4>
+    <pre><code class="language-sql">SELECT inc.income_id, inc.farm_crop_id, f.farm_name, c.crop_name,
+       inc.sale_date, inc.quantity_sold, inc.unit, inc.price_per_unit,
+       inc.total_income, inc.buyer_name
+FROM Income AS inc
+JOIN Farm_Crops AS fc ON fc.farm_crop_id = inc.farm_crop_id
+JOIN Farms AS f ON f.farm_id = fc.farm_id
+JOIN Crops AS c ON c.crop_id = fc.crop_id
+WHERE f.farmer_id = %s
+ORDER BY inc.sale_date DESC, inc.income_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Retrieves sales entries with linked crop varieties and farms, powering the farmer's gross revenue metrics.</p>
+  </div>
+</div>
+
+<!-- TABLE 17 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">17. Subsidies (Government Schemes Catalog)</span>
+    <span class="badge badge-get">GET /api/reference-data</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Master catalog of state and central agricultural subsidy schemes (e.g., Organic Fertilizer Grant, Subsidized Seeds, Solar Pump Subvention) with eligibility terms.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Subsidies (
+    subsidy_id INT AUTO_INCREMENT PRIMARY KEY,
+    subsidy_name VARCHAR(150) NOT NULL,
+    description TEXT,
+    amount DECIMAL(12,2) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    eligibility_criteria TEXT
+);</code></pre>
+
+    <h4>A. Fetch Active Subsidy Schemes</h4>
+    <pre><code class="language-sql">SELECT subsidy_id, subsidy_name, description, amount, start_date, end_date, eligibility_criteria
+FROM Subsidies
+WHERE (CURRENT_DATE BETWEEN start_date AND end_date) OR start_date IS NULL
+ORDER BY subsidy_name ASC;</code></pre>
+    <p><em>Query Breakdown:</em> Filters schemes dynamically using MySQL's <code>CURRENT_DATE</code> so that farmers only view currently active financial aid programs.</p>
+  </div>
+</div>
+
+<!-- TABLE 18 -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">18. Farmer_Subsidies (Applications &amp; Officer Review)</span>
+    <span class="badge badge-post">POST /api/farmer/subsidies</span>
+    <span class="badge badge-post">POST /api/officer/subsidies/review</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> Bridges farmers and government subsidies. Manages the full application lifecycle: <code>PENDING &rarr; APPROVED / REJECTED &rarr; PAID</code>, officer jurisdiction validation, and disbursement records.</p>
+    <p><strong>Schema Definition:</strong></p>
+    <pre><code class="language-sql">CREATE TABLE Farmer_Subsidies (
+    farmer_subsidy_id INT AUTO_INCREMENT PRIMARY KEY,
+    farmer_id INT NOT NULL,
+    subsidy_id INT NOT NULL,
+    officer_id INT NULL,
+    application_date DATE NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'PAID') DEFAULT 'PENDING',
+    approved_amount DECIMAL(12,2),
+    payment_date DATE,
+    remarks VARCHAR(255),
+    FOREIGN KEY (farmer_id) REFERENCES Farmers(farmer_id) ON DELETE CASCADE,
+    FOREIGN KEY (subsidy_id) REFERENCES Subsidies(subsidy_id) ON DELETE RESTRICT,
+    FOREIGN KEY (officer_id) REFERENCES Officers(officer_id) ON DELETE SET NULL,
+    UNIQUE (farmer_id, subsidy_id)
+);</code></pre>
+
+    <h4>A. Apply for Subsidy (Flask Handler: <code>handle_apply_subsidy</code>)</h4>
+    <pre><code class="language-sql">INSERT INTO Farmer_Subsidies (farmer_id, subsidy_id, application_date, status)
+VALUES (%s, %s, CURRENT_DATE, 'PENDING');</code></pre>
+    <p><em>Query Breakdown:</em> Submits an application in <code>PENDING</code> state. The table constraint <code>UNIQUE (farmer_id, subsidy_id)</code> prevents accidental or fraudulent duplicate submissions for the same scheme.</p>
+
+    <h4>B. Officer Review &amp; Approval (Flask Handler: <code>handle_review_subsidy</code>)</h4>
+    <pre><code class="language-sql">UPDATE Farmer_Subsidies AS fs
+SET fs.status = %s,
+    fs.approved_amount = %s,
+    fs.remarks = %s,
+    fs.officer_id = %s,
+    fs.payment_date = %s
+WHERE fs.farmer_subsidy_id = %s;</code></pre>
+    <p><em>Query Breakdown:</em> Updates review status. Before executing this query, Flask performs a strict jurisdictional check ensuring the applicant farmer resides within the officer's designated Krishi Bhavan / Gram Panchayath.</p>
+
+    <h4>C. Farmer View of Applied Subsidies with Reviewing Officer Attribution</h4>
+    <pre><code class="language-sql">SELECT fs.farmer_subsidy_id, s.subsidy_id, s.subsidy_name, s.description,
+       s.amount, fs.status, fs.application_date, fs.approved_amount,
+       fs.payment_date, fs.remarks, off_u.full_name AS officer_name,
+       p.panchayath_name, o.designation AS officer_designation
+FROM Farmer_Subsidies AS fs
+JOIN Subsidies AS s ON s.subsidy_id = fs.subsidy_id
+JOIN Farmers AS f ON f.farmer_id = fs.farmer_id
+JOIN Panchayaths AS p ON p.panchayath_id = f.panchayath_id
+LEFT JOIN Officers AS o ON o.officer_id = fs.officer_id
+LEFT JOIN Users AS off_u ON off_u.user_id = o.user_id
+WHERE fs.farmer_id = %s
+ORDER BY fs.application_date DESC, fs.farmer_subsidy_id DESC;</code></pre>
+    <p><em>Query Breakdown:</em> Links the subsidy application to the reviewing agricultural officer's name and designation using <code>LEFT JOIN</code> so that pending applications (which do not yet have an assigned officer) display properly.</p>
+  </div>
+</div>
+
+<!-- TABLE 19 / VIEW -->
+<div class="table-card">
+  <div class="table-card-header">
+    <span class="table-card-title">19. Officer_Farmer_Directory (Denormalized Architectural View)</span>
+    <span class="badge badge-get">Database View</span>
+  </div>
+  <div class="table-card-body">
+    <p><strong>Purpose:</strong> A database view providing pre-joined, high-performance read access across administrative hierarchies (Krishi Bhavan &rarr; Gram Panchayath &rarr; Farmer &rarr; Officer).</p>
+    <p><strong>View DDL Definition:</strong></p>
+    <pre><code class="language-sql">CREATE VIEW Officer_Farmer_Directory AS
+SELECT 
+    off.office_id,
+    off.office_name,
+    o.officer_id,
+    u_off.user_id AS officer_user_id,
+    u_off.full_name AS officer_name,
+    p.panchayath_id,
+    p.panchayath_name,
+    p.district,
+    f.farmer_id,
+    u_farm.full_name AS farmer_name,
+    u_farm.email AS farmer_email,
+    u_farm.phone AS farmer_phone,
+    f.address AS farmer_address,
+    f.registration_date
+FROM Officers o
+JOIN Users u_off ON o.user_id = u_off.user_id
+JOIN Agriculture_Offices off ON o.office_id = off.office_id
+JOIN Panchayaths p ON off.office_id = p.office_id
+JOIN Farmers f ON p.panchayath_id = f.panchayath_id
+JOIN Users u_farm ON f.user_id = u_farm.user_id;</code></pre>
+    <p><em>Query Breakdown:</em> Encapsulates 5 distinct relational table joins into a single querying target. Allows officers to query all farmers under their jurisdiction with simple <code>WHERE office_id = %s</code> predicates without repeatedly writing complex multi-table joins in application code.</p>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div style="page-break-before: always;"></div>
+<h1>5. Advanced Cross-Table Aggregation Queries</h1>
+<p>
+  Beyond standard CRUD operations, the Agriculture Management System executes sophisticated analytical and financial queries that perform multi-table calculations and rollups in real-time.
+</p>
+
+<h2>5.1 Financial Net Balance Aggregation</h2>
+<p>
+  To deliver the farmer's financial dashboard in <code>get_farmer_overview</code>, Flask compiles an exact financial balance across 5 independent entity streams:
+</p>
+<pre><code class="language-python"># Aggregation logic in backend/app.py
+total_expenses    = sum(float(e["amount"] or 0) for e in expenses)
+total_fert_cost   = sum(float(f["total_cost"] or 0) for f in fertilizers)
+total_labour_cost = sum(float(l["total_cost"] or 0) for l in labour)
+total_income      = sum(float(i["total_income"] or 0) for i in income)
+total_subsidies   = sum(float(s["approved_amount"] or 0) for s in subsidies if s["status"] in ("APPROVED", "PAID"))
+
+overall_cost = total_expenses + total_fert_cost + total_labour_cost
+net_balance  = (total_income + total_subsidies) - overall_cost
+</code></pre>
+<p>
+  This multi-table computation provides the farmer with an accurate, real-time Profit/Loss statement:
+  $$\text{Net Balance} = (\text{Crop Sales} + \text{Approved Subsidies}) - (\text{General Expenses} + \text{Fertilizer Outlays} + \text{Labor Wages})$$
+</p>
+
+<h2>5.2 Officer Farmer Overview with Correlated Subqueries &amp; String Concatenation</h2>
+<p>
+  In <code>get_officer_farmers</code>, Flask executes an advanced analytical query that compiles total farms count, acreage sum, and distinct crop varieties per farmer using <code>GROUP_CONCAT</code>:
+</p>
+<pre><code class="language-sql">SELECT f.farmer_id,
+       u.full_name AS farmer_name,
+       u.email AS farmer_email,
+       u.phone AS farmer_phone,
+       p.panchayath_id,
+       p.panchayath_name,
+       ao.office_id,
+       ao.office_name,
+       f.address AS farmer_address,
+       f.registration_date,
+       COALESCE(farm_stats.farms_count, 0) AS farms_count,
+       COALESCE(farm_stats.total_acres, 0) AS total_acres,
+       COALESCE(farm_stats.farms_summary, '') AS farms_summary,
+       COALESCE(crop_stats.crops_count, 0) AS crops_count,
+       COALESCE(crop_stats.crops_summary, '') AS crops_summary
+FROM Farmers f
+JOIN Users u ON u.user_id = f.user_id
+JOIN Panchayaths p ON p.panchayath_id = f.panchayath_id
+JOIN Agriculture_Offices ao ON ao.office_id = p.office_id
+LEFT JOIN (
+    SELECT farmer_id,
+           COUNT(farm_id) AS farms_count,
+           SUM(area_acres) AS total_acres,
+           GROUP_CONCAT(farm_name SEPARATOR ', ') AS farms_summary
+    FROM Farms
+    GROUP BY farmer_id
+) farm_stats ON farm_stats.farmer_id = f.farmer_id
+LEFT JOIN (
+    SELECT f2.farmer_id,
+           COUNT(DISTINCT fc.farm_crop_id) AS crops_count,
+           GROUP_CONCAT(DISTINCT c.crop_name SEPARATOR ', ') AS crops_summary
+    FROM Farm_Crops fc
+    JOIN Farms f2 ON f2.farm_id = fc.farm_id
+    JOIN Crops c ON c.crop_id = fc.crop_id
+    GROUP BY f2.farmer_id
+) crop_stats ON crop_stats.farmer_id = f.farmer_id
+WHERE p.office_id = %s
+ORDER BY p.panchayath_name, u.full_name;
+</code></pre>
+
+<div class="callout callout-blue">
+  <div class="callout-title">Deep SQL Query Mechanics</div>
+  <ul>
+    <li><strong>LEFT JOIN with Pre-Aggregated Subqueries:</strong> Instead of joining <code>Farms</code> directly (which would multiply farmer rows by farm count and crop count, creating an exponential Cartesian product), the query pre-groups farms and crops in subqueries. This preserves strict 1-row-per-farmer cardinality.</li>
+    <li><strong>COALESCE Function:</strong> Guarantees that farmers with zero farms or crops return <code>0</code> or empty strings instead of <code>NULL</code>, ensuring the frontend JSON parser receives clean numeric types.</li>
+    <li><strong>GROUP_CONCAT Function:</strong> Concatenates distinct farm plot names (e.g., <em>"North Acre, Riverside Plot"</em>) into a single string for quick badge display in the officer's directory table.</li>
+  </ul>
+</div>
+
+<!-- SECTION 6 -->
+<div style="page-break-before: always;"></div>
+<h1>6. Viva Voce &amp; Technical Defense Q&amp;A</h1>
+<p>
+  Use these questions and answers to defend the system architecture, Flask integration, and database design before evaluators.
+</p>
+
+<div style="margin-top: 15px;">
+  <p><strong>Q1: What is the exact role of Flask in your project?</strong><br>
+  <em>Answer:</em> Flask serves as the Application Tier (Tier 2). It routes incoming HTTP requests from the browser, parses JSON payloads from <code>request.environ</code>, enforces authentication and Role-Based Access Control via JWT, manages transactional database sockets, executes parameterized SQL queries, and packages query results into standardized JSON responses with appropriate HTTP status codes.</p>
+
+  <p><strong>Q2: How does Flask connect to MySQL? Do you use an ORM like SQLAlchemy?</strong><br>
+  <em>Answer:</em> We chose raw parameterized SQL queries using official <code>mysql.connector</code> over an ORM. This allows explicit control over query performance, guarantees complete visibility into all SQL execution plans, avoids ORM "N+1 query" pitfalls, and enables sophisticated DBMS features like stored generated columns, explicit transactions, and database views.</p>
+
+  <p><strong>Q3: How does your database ensure that a farmer cannot delete a crop if financial records exist?</strong><br>
+  <em>Answer:</em> Through foreign key referential integrity constraints. For example, <code>Farm_Crops</code> is referenced by <code>Income</code>, <code>Farm_Crop_Labour</code>, and <code>Farm_Crop_Fertilizer</code>. When deleting a farm, dependent crop cycles and their financial records cascade predictably (<code>ON DELETE CASCADE</code>) or prevent orphaned records, maintaining absolute relational consistency.</p>
+
+  <p><strong>Q4: How are passwords secured in the database?</strong><br>
+  <em>Answer:</em> Passwords are never stored in plain text. We utilize PBKDF2 with HMAC-SHA256, 310,000 iterations, and a 16-byte random salt generated via Python's <code>secrets</code> module. On login, the hash is compared using <code>hmac.compare_digest</code> to prevent timing attacks.</p>
+
+  <p><strong>Q5: How does Flask handle concurrent requests from multiple farmers?</strong><br>
+  <em>Answer:</em> In local development, Flask's Werkzeug server runs with multi-threading enabled by default (<code>threaded=True</code>), spawning thread workers for concurrent browser requests. In cloud production (Railway/Docker), Gunicorn runs 3 parallel pre-forked worker processes, allowing the system to handle concurrent web and API traffic smoothly without socket contention.</p>
+</div>
+
+<div style="margin-top: 40px; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 15px; color: #718096; font-size: 8.5pt;">
+  Agriculture Management Portal &bull; Comprehensive Engineering &amp; Database Query Manual &bull; End of Guide
+</div>
+
+</body>
+</html>

@@ -45,7 +45,9 @@ def load_environment_file() -> None:
 
 load_environment_file()
 
-APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY", "your_password_here")
+APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY", "")
+if not APP_SECRET_KEY:
+    APP_SECRET_KEY = secrets.token_hex(32)
 def get_database_config() -> dict[str, Any]:
     db_url = (
         os.environ.get("DATABASE_URL")
@@ -67,7 +69,7 @@ def get_database_config() -> dict[str, Any]:
         "port": int(os.environ.get("DB_PORT") or os.environ.get("MYSQLPORT", "3306")),
         "database": os.environ.get("DB_NAME") or os.environ.get("MYSQLDATABASE", "AgricultureDB"),
         "user": os.environ.get("DB_USER") or os.environ.get("MYSQLUSER", ""),
-        "password": os.environ.get("DB_PASSWORD") or os.environ.get("MYSQLPASSWORD", "your_password_here"),
+        "password": os.environ.get("DB_PASSWORD") or os.environ.get("MYSQLPASSWORD", ""),
         "connection_timeout": 5,
     }
 
@@ -2273,7 +2275,11 @@ def json_response(
         [
             ("Content-Type", "application/json; charset=utf-8"),
             ("Content-Length", str(len(body))),
-            ("Cache-Control", "no-store"),
+            ("Cache-Control", "no-store, no-cache, must-revalidate"),
+            ("Pragma", "no-cache"),
+            ("X-Frame-Options", "SAMEORIGIN"),
+            ("X-XSS-Protection", "1; mode=block"),
+            ("Referrer-Policy", "strict-origin-when-cross-origin"),
             ("X-Content-Type-Options", "nosniff"),
             ("Access-Control-Allow-Origin", "*"),
             ("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS"),
@@ -2305,6 +2311,8 @@ def serve_frontend(path: str, start_response: Any) -> list[bytes]:
         [
             ("Content-Type", content_type),
             ("Content-Length", str(len(content))),
+            ("X-Frame-Options", "SAMEORIGIN"),
+            ("Referrer-Policy", "strict-origin-when-cross-origin"),
             ("X-Content-Type-Options", "nosniff"),
         ],
     )
@@ -2357,7 +2365,8 @@ def application(environ: dict[str, Any], start_response: Any) -> list[bytes]:
             result = handle_update_profile(parse_json_body(environ), user)
             return json_response(start_response, 200, result)
 
-        if path == "/api/seed" and method == "GET":
+        if path == "/api/seed" and method in ("GET", "POST"):
+            authenticated_user(environ, "OFFICER")
             with database_connection() as connection:
                 seed_catalog_data(connection)
             return json_response(start_response, 200, {"status": "ok", "message": "Master catalog seeded successfully."})
